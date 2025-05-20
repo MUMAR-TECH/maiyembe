@@ -1,0 +1,61 @@
+{% extends "core/base.html" %}
+
+{% block title %}Our Services | Maiyembe Architects & Builders{% endblock %}
+{% block description %}Maiyembe offers top-tier architectural design, construction management, and property development services. Certified architects with 15+ years experience in residential and commercial projects.{% endblock %}
+
+{% block content %}
+<section class="services">
+    <div class="container">
+        <h1 class="section-title">OUR SERVICES</h1>
+        <p class="services-intro" style="text-align: center; max-width: 800px; margin: 0 auto 50px;">
+            We provide comprehensive architectural and construction solutions tailored to meet your specific needs. 
+            Our team of experts delivers exceptional quality and innovative designs for every project.
+        </p>
+        
+        <!-- Featured Services -->
+        <div class="featured-services">
+            <h2 class="subsection-title">Featured Services</h2>
+            <div class="services-grid">
+                {% for service in featured_services %}
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="{{ service.icon_class }}"></i>
+                    </div>
+                    <h3>{{ service.title }}</h3>
+                    <p>{{ service.description|truncatewords:30 }}</p>
+                    <a href="{% url 'service_detail' service.slug %}" class="read-more">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- All Services -->
+        <div class="all-services">
+            <h2 class="subsection-title">All Services</h2>
+            <div class="services-list">
+                {% for service in services %}
+                <div class="service-item">
+                    <div class="service-content">
+                        <h3>{{ service.title }}</h3>
+                        <p>{{ service.description }}</p>
+                        <a href="{% url 'service_detail' service.slug %}" class="read-more">Learn More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="service-image">
+                        <img src="{{ service.image.url }}" alt="{{ service.title }}">
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <h2>INTERESTED IN OUR SERVICES?</h2>
+        <p>Contact us today to discuss your project requirements and learn how we can bring your vision to life.</p>
+        <a href="{% url 'contact' %}" class="btn">GET A FREE CONSULTATION</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ project.title }} | Maiyembe Architects & Builders{% endblock %}
+{% block description %}{{ project.description|truncatewords:30 }}{% endblock %}
+
+{% block content %}
+<section class="project-detail">
+    <div class="container">
+        <div class="project-header">
+            <h1>{{ project.title }}</h1>
+            <div class="project-meta">
+                <span class="project-category">{{ project.category.name }}</span>
+                <span class="project-date">{{ project.created_at|date:"F Y" }}</span>
+            </div>
+        </div>
+        
+        <div class="project-gallery">
+            <div class="main-image">
+                <img src="{{ project.image.url }}" alt="{{ project.title }}">
+            </div>
+            
+            {% if project.images.all %}
+            <div class="thumbnail-gallery">
+                {% for image in project.images.all %}
+                <div class="thumbnail">
+                    <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:project.title }}">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="project-content">
+            <div class="project-description">
+                <h2>Project Overview</h2>
+                {{ project.description|linebreaks }}
+            </div>
+            
+            <div class="project-details">
+                <h2>Project Details</h2>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <h3>Category</h3>
+                        <p>{{ project.category.name }}</p>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Location</h3>
+                        <p>{{ project.location|default:"Nairobi, Kenya" }}</p>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Size</h3>
+                        <p>{{ project.size|default:"Not specified" }}</p>
+                    </div>
+                    <div class="detail-item">
+                        <h3>Completed</h3>
+                        <p>{{ project.completion_date|date:"F Y"|default:"Not specified" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if related_projects %}
+        <div class="related-projects">
+            <h2>Related Projects</h2>
+            <div class="related-projects-grid">
+                {% for project in related_projects %}
+                <div class="related-project-card">
+                    <a href="{% url 'project_detail' project.slug %}">
+                        <div class="related-project-image">
+                            <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                        </div>
+                        <div class="related-project-content">
+                            <h3>{{ project.title }}</h3>
+                            <span class="project-category">{{ project.category.name }}</span>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

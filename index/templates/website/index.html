@@ -1,0 +1,151 @@
+<!-- website/templates/website/index.html -->
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Hero Slider -->
+    <div class="hero-slider swiper" id="home">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" style="background-image: url('{% static 'images/hero1.jpg' %}')">
+                <div class="slide-overlay"></div>
+                <div class="slide-content">
+                    <h1>Architectural Excellence in Kenya</h1>
+                    <p>Creating innovative, sustainable spaces with 15+ years of construction expertise in Nairobi and beyond</p>
+                    <a href="#contact" class="btn">Get Free Consultation</a>
+                </div>
+            </div>
+            <!-- Additional slides... -->
+        </div>
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <h2 class="section-title">ABOUT MAIYEMBE</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    {{ site_settings.about_us|safe }}
+                    <a href="#team" class="btn">Meet Our Certified Team</a>
+                </div>
+                <div class="about-image">
+                    <img src="{% static 'images/about.jpg' %}" alt="Maiyembe office and team">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="container">
+            <h2 class="section-title">OUR CONSTRUCTION SERVICES</h2>
+            <div class="services-grid">
+                {% for service in services %}
+                <div class="service-card">
+                    <div class="service-image">
+                        <img src="{{ service.image.url }}" alt="{{ service.title }}">
+                    </div>
+                    <div class="service-content">
+                        <h3>{{ service.title }}</h3>
+                        <p>{{ service.description|truncatewords:20 }}</p>
+                        <a href="{% url 'service_detail' service.slug %}" class="read-more">READ MORE <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery" id="gallery">
+        <div class="container">
+            <h2 class="section-title">OUR RECENT PROJECTS</h2>
+            <div class="gallery-grid">
+                {% for project in projects %}
+                <div class="gallery-item {% if forloop.counter|divisibleby:3 %}landscape{% endif %}">
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                    <div class="project-overlay">
+                        <h3>{{ project.title }}</h3>
+                        <a href="{% url 'project_detail' project.slug %}" class="view-project">View Project</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title">CLIENT TESTIMONIALS</h2>
+            <div class="testimonial-grid">
+                {% for testimonial in testimonials %}
+                <div class="testimonial-card">
+                    <p>"{{ testimonial.content }}"</p>
+                    <div class="testimonial-author">{{ testimonial.client_name }}</div>
+                    <div class="testimonial-rating">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= testimonial.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team" id="team">
+        <div class="container">
+            <h2 class="section-title">OUR LEADERSHIP TEAM</h2>
+            <div class="team-grid">
+                {% for member in team_members %}
+                <div class="team-card">
+                    <img src="{{ member.image.url }}" alt="{{ member.name }}" class="team-image">
+                    <h3>{{ member.name }}</h3>
+                    <div class="team-position">{{ member.position }}</div>
+                    <p>{{ member.bio|truncatewords:15 }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="view-more-btn">
+                <a href="{% url 'team' %}" class="btn">VIEW FULL TEAM</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 class="section-title">CONTACT MAIYEMBE</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h4>HEADQUARTERS</h4>
+                            <p>{{ site_settings.address|linebreaks }}</p>
+                        </div>
+                    </div>
+                    <!-- Other contact info items... -->
+                </div>
+                <div class="contact-form">
+                    <form method="post" action="{% url 'contact_submit' %}">
+                        {% csrf_token %}
+                        <input type="text" name="name" placeholder="Your Name" required>
+                        <input type="email" name="email" placeholder="Your Email" required>
+                        <input type="text" name="subject" placeholder="Subject">
+                        <textarea name="message" placeholder="Your Message" required></textarea>
+                        <button type="submit" class="btn">SEND MESSAGE</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

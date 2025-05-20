@@ -1,0 +1,98 @@
+{% extends "core/base.html" %}
+
+{% block title %}Our Projects | Maiyembe Architects & Builders{% endblock %}
+{% block description %}Explore our portfolio of architectural and construction projects in Zambia. Residential, commercial, and interior design projects showcasing our expertise.{% endblock %}
+
+{% block content %}
+<section class="projects">
+    <div class="container">
+        <h1 class="section-title">OUR PROJECTS</h1>
+        <p style="text-align: center; max-width: 800px; margin: 0 auto 40px;">
+            Explore our portfolio of completed projects showcasing our architectural expertise and construction quality across residential, commercial, and institutional sectors.
+        </p>
+        
+        <!-- Project Filter -->
+        <div class="project-filter">
+            <button class="filter-btn {% if not selected_category %}active{% endif %}" data-filter="all">All Projects</button>
+            {% for category in categories %}
+            <button class="filter-btn {% if selected_category == category.slug %}active{% endif %}" data-filter="{{ category.slug }}">
+                {{ category.name }}
+            </button>
+            {% endfor %}
+        </div>
+        
+        <!-- Projects Grid -->
+        <div class="projects-grid">
+            {% for project in projects %}
+            <div class="project-card" data-category="{{ project.category.slug }}">
+                <div class="project-image">
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                </div>
+                <div class="project-content">
+                    <span class="project-category">{{ project.category.name }}</span>
+                    <h3>{{ project.title }}</h3>
+                    <p>{{ project.description|truncatewords:20 }}</p>
+                    <a href="{% url 'project_detail' project.slug %}" class="btn btn-outline">VIEW PROJECT</a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-projects">
+                <p>No projects found{% if selected_category %} in this category{% endif %}. Check back later!</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if projects.paginator.num_pages > 1 %}
+        <div class="pagination">
+            {% if projects.has_previous %}
+            <a href="?page=1{% if selected_category %}&category={{ selected_category }}{% endif %}"><i class="fas fa-angle-double-left"></i></a>
+            <a href="?page={{ projects.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}"><i class="fas fa-angle-left"></i></a>
+            {% endif %}
+            
+            {% for num in projects.paginator.page_range %}
+            {% if projects.number == num %}
+            <a href="#" class="active">{{ num }}</a>
+            {% elif num > projects.number|add:'-3' and num < projects.number|add:'3' %}
+            <a href="?page={{ num }}{% if selected_category %}&category={{ selected_category }}{% endif %}">{{ num }}</a>
+            {% endif %}
+            {% endfor %}
+            
+            {% if projects.has_next %}
+            <a href="?page={{ projects.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}"><i class="fas fa-angle-right"></i></a>
+            <a href="?page={{ projects.paginator.num_pages }}{% if selected_category %}&category={{ selected_category }}{% endif %}"><i class="fas fa-angle-double-right"></i></a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <h2>READY TO START YOUR PROJECT?</h2>
+        <p>Whether you're planning a new construction, renovation, or need architectural design services, our team is ready to bring your vision to life with expertise and attention to detail.</p>
+        <a href="{% url 'contact' %}" class="btn">GET IN TOUCH</a>
+    </div>
+</section>
+
+<script>
+    // Project filter functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filter = this.dataset.filter;
+                
+                // Update URL
+                if (filter === 'all') {
+                    window.location.href = "{% url 'projects' %}";
+                } else {
+                    window.location.href = "{% url 'projects' %}?category=" + filter;
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

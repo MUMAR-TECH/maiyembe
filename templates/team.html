@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    {% if leadership_team %}
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Leadership Team</h2>
+        <div class="row">
+            {% for member in leadership_team %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ member.image.url }}" class="card-img-top" alt="{{ member.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ member.name }}</h5>
+                        <p class="card-subtitle mb-2 text-muted">{{ member.position }}</p>
+                        <p class="card-text">{{ member.bio }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if regular_team %}
+    <section>
+        <h2 class="text-center mb-4">Our Team</h2>
+        <div class="row">
+            {% for member in regular_team %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ member.image.url }}" class="card-img-top" alt="{{ member.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ member.name }}</h5>
+                        <p class="card-subtitle mb-2 text-muted">{{ member.position }}</p>
+                        <p class="card-text">{{ member.bio }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

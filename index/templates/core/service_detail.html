@@ -1,0 +1,84 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ service.title }} | Maiyembe Architects & Builders{% endblock %}
+{% block description %}{{ service.description|truncatewords:30 }}{% endblock %}
+
+{% block content %}
+<section class="service-detail">
+    <div class="container">
+        <div class="service-header">
+            <h1>{{ service.title }}</h1>
+            <div class="service-meta">
+                {% if service.icon_class %}
+                <div class="service-icon">
+                    <i class="{{ service.icon_class }}"></i>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="service-content">
+            <div class="service-image">
+                <img src="{{ service.image.url }}" alt="{{ service.title }}">
+            </div>
+            
+            <div class="service-description">
+                <h2>Service Overview</h2>
+                {{ service.description|linebreaks }}
+                
+                {% if service.additional_content %}
+                <div class="additional-content">
+                    {{ service.additional_content|safe }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if service.process_steps.all %}
+        <div class="service-process">
+            <h2>Our Process</h2>
+            <div class="process-steps">
+                {% for step in service.process_steps.all %}
+                <div class="process-step">
+                    <div class="step-number">{{ forloop.counter }}</div>
+                    <div class="step-content">
+                        <h3>{{ step.title }}</h3>
+                        <p>{{ step.description }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if related_services %}
+        <div class="related-services">
+            <h2>Related Services</h2>
+            <div class="related-services-grid">
+                {% for service in related_services %}
+                <div class="related-service-card">
+                    <a href="{% url 'service_detail' service.slug %}">
+                        <div class="service-icon">
+                            <i class="{{ service.icon_class }}"></i>
+                        </div>
+                        <h3>{{ service.title }}</h3>
+                        <p>{{ service.description|truncatewords:15 }}</p>
+                        <span class="read-more">Learn More <i class="fas fa-arrow-right"></i></span>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <h2>READY TO GET STARTED?</h2>
+        <p>Contact us today to discuss your {{ service.title }} needs and learn how we can help you achieve your goals.</p>
+        <a href="{% url 'contact' %}" class="btn">CONTACT US NOW</a>
+    </div>
+</section>
+{% endblock %}

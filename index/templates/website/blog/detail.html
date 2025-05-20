@@ -1,0 +1,53 @@
+<!-- website/templates/website/blog/detail.html -->
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}{{ post.meta_title|default:post.title }} - {{ site_settings.site_name }}{% endblock %}
+
+{% block meta_description %}{{ post.meta_description }}{% endblock %}
+
+{% block content %}
+<article class="blog-post">
+    <div class="container">
+        <div class="post-header">
+            <div class="post-meta">
+                <span class="post-date">{{ post.published_date|date:"F j, Y" }}</span>
+                {% for category in post.categories.all %}
+                <a href="#" class="post-category">{{ category.name }}</a>
+                {% endfor %}
+            </div>
+            <h1>{{ post.title }}</h1>
+            {% if post.author %}
+            <div class="post-author">
+                <img src="{{ post.author.image.url }}" alt="{{ post.author.name }}">
+                <span>By {{ post.author.name }}</span>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="post-featured-image">
+            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+        </div>
+        
+        <div class="post-content">
+            {{ post.content|safe }}
+        </div>
+        
+        {% if related_posts %}
+        <div class="related-posts">
+            <h3>You Might Also Like</h3>
+            <div class="related-grid">
+                {% for post in related_posts %}
+                <div class="related-post">
+                    <a href="{% url 'blog_detail' post.slug %}">
+                        <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+                        <h4>{{ post.title }}</h4>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</article>
+{% endblock %}

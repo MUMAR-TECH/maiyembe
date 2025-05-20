@@ -1,0 +1,22 @@
+{% extends "core/base.html" %}
+
+{% block title %}{% if service %}Edit{% else %}Create{% endif %} Service{% endblock %}
+
+{% block content %}
+<section class="admin-form">
+    <div class="container">
+        <h1>{% if service %}Edit{% else %}Create{% endif %} Service</h1>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            
+            <div class="form-actions">
+                <button type="submit" class="btn">Save</button>
+                <a href="{% if service %}{% url 'service_detail' service.slug %}{% else %}{% url 'services' %}{% endif %}" 
+                   class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

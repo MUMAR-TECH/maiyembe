@@ -1,0 +1,152 @@
+{% extends "core/base.html" %}
+
+{% block title %}Blog | Maiyembe Architects & Builders{% endblock %}
+{% block description %}Explore our latest articles on architecture, construction trends, design tips, and industry insights from Maiyembe's team of experts.{% endblock %}
+
+{% block content %}
+<section class="blog-section">
+    <div class="container">
+        <div class="blog-container">
+            <div class="blog-main">
+                <h1 class="section-title">OUR BLOG</h1>
+                <p style="text-align: center; margin-bottom: 40px;">
+                    Insights, trends, and expert advice on architecture, construction, and design.
+                </p>
+                
+                <!-- Mobile Search Bar -->
+                <div class="mobile-search-container">
+                    <form method="get" action="{% url 'blog' %}">
+                        <div class="mobile-search">
+                            <button type="submit"><i class="fas fa-search"></i></button>
+                            <input type="text" name="q" placeholder="Search articles..." value="{{ search_query|default:'' }}">
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Mobile Categories -->
+                <div class="mobile-categories">
+                    <a href="{% url 'blog' %}" class="mobile-category {% if not selected_category %}active{% endif %}">All</a>
+                    {% for category in categories %}
+                    <a href="{% url 'blog' %}?category={{ category.slug }}" class="mobile-category {% if selected_category == category.slug %}active{% endif %}">
+                        {{ category.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+                
+                <div class="blog-list">
+                    {% for post in blog_posts %}
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <a href="{% url 'blog_detail' post.slug %}">
+                                <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+                            </a>
+                        </div>
+                        <div class="blog-content">
+                            <div class="blog-meta">
+                                <span><i class="far fa-calendar-alt"></i> {{ post.created_at|date:"F j, Y" }}</span>
+                                <span><i class="fas fa-user"></i> {{ post.author }}</span>
+                            </div>
+                            <h3><a href="{% url 'blog_detail' post.slug %}">{{ post.title }}</a></h3>
+                            <p>{{ post.excerpt }}</p>
+                            <a href="{% url 'blog_detail' post.slug %}" class="read-more">READ MORE <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </article>
+                    {% empty %}
+                    <div class="no-results">
+                        <p>No blog posts found.{% if search_query %} Try a different search term.{% endif %}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if blog_posts.paginator.num_pages > 1 %}
+                <div class="pagination">
+                    {% if blog_posts.has_previous %}
+                    <a href="?page=1{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">First</a>
+                    <a href="?page={{ blog_posts.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Previous</a>
+                    {% endif %}
+                    
+                    {% for num in blog_posts.paginator.page_range %}
+                    {% if blog_posts.number == num %}
+                    <a href="#" class="current">{{ num }}</a>
+                    {% elif num > blog_posts.number|add:'-3' and num < blog_posts.number|add:'3' %}
+                    <a href="?page={{ num }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">{{ num }}</a>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if blog_posts.has_next %}
+                    <a href="?page={{ blog_posts.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Next</a>
+                    <a href="?page={{ blog_posts.paginator.num_pages }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Last</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <!-- Mobile Newsletter -->
+                <div class="mobile-newsletter">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to receive the latest articles and updates directly to your inbox.</p>
+                    <form class="newsletter-form" action="{% url 'subscribe' %}" method="post">
+                        {% csrf_token %}
+                        <input type="email" name="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn">SUBSCRIBE</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Sidebar (hidden on mobile) -->
+            <aside class="blog-sidebar">
+                <!-- Search Widget -->
+                <div class="sidebar-widget">
+                    <h3>Search Blog</h3>
+                    <form class="widget-search-form" role="search" method="get" action="{% url 'blog' %}">
+                        <input type="search" name="q" placeholder="Search articles..." value="{{ search_query|default:'' }}" aria-label="Search blog articles">
+                        <button type="submit" aria-label="Submit search"><i class="fas fa-search"></i></button>
+                    </form>
+                </div>
+                
+                <!-- Categories Widget -->
+                <div class="sidebar-widget">
+                    <h3>Categories</h3>
+                    <ul class="categories-list">
+                        <li><a href="{% url 'blog' %}" {% if not selected_category %}class="active"{% endif %}>All <span>({{ all_posts_count }})</span></a></li>
+                        {% for category in categories %}
+                        <li><a href="{% url 'blog' %}?category={{ category.slug }}" {% if selected_category == category.slug %}class="active"{% endif %}>{{ category.name }} <span>({{ category.blogpost_set.count }})</span></a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <!-- Popular Posts Widget -->
+                <div class="sidebar-widget">
+                    <h3>Popular Posts</h3>
+                    <ul class="popular-posts">
+                        {% for post in popular_posts %}
+                        <li class="popular-post">
+                            <a href="{% url 'blog_detail' post.slug %}">
+                                <div class="popular-post-image">
+                                    <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+                                </div>
+                                <div class="popular-post-content">
+                                    <h4>{{ post.title }}</h4>
+                                    <div class="popular-post-date">{{ post.created_at|date:"F j, Y" }}</div>
+                                </div>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <!-- Newsletter Widget -->
+                <div class="sidebar-widget">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to receive the latest articles and updates directly to your inbox.</p>
+                    <form class="newsletter-form" action="{% url 'subscribe' %}" method="post">
+                        {% csrf_token %}
+                        <input type="email" name="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn">SUBSCRIBE</button>
+                    </form>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}
