@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="request-success">
+    <div class="container">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1>THANK YOU FOR YOUR REQUEST!</h1>
+            <p>We've received your service request and our team will contact you shortly.</p>
+            
+            <div class="next-steps">
+                <h3>What Happens Next?</h3>
+                <ol>
+                    <li>Our specialist will review your request</li>
+                    <li>We'll contact you via your preferred method</li>
+                    <li>We'll discuss your project requirements</li>
+                    <li>You'll receive a customized proposal</li>
+                </ol>
+            </div>
+            
+            <div class="contact-options">
+                <h3>Need immediate assistance?</h3>
+                <div class="contact-buttons">
+                    <a href="tel:+254700123456" class="btn">
+                        <i class="fas fa-phone"></i> CALL US NOW
+                    </a>
+                    <a href="https://wa.me/254700123456" class="btn btn-whatsapp" target="_blank">
+                        <i class="fab fa-whatsapp"></i> CHAT ON WHATSAPP
+                    </a>
+                </div>
+            </div>
+            
+            <div class="back-to-services">
+                <a href="{% url 'service_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> BACK TO SERVICES
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

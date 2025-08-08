@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Services Hero Section -->
+<section class="services-hero">
+    <div class="services-hero-content">
+        <h1>OUR COMPANY SERVICES</h1>
+        <p>We offer a range of premium services designed to meet your construction and architectural needs.</p>
+    </div>
+</section>
+
+<!-- Services Overview Section -->
+<section class="services-overview">
+    <div class="container">
+        <div class="services-intro">
+            <h2 class="section-title">PRESENT CONSTRUCTION SERVICES</h2>
+            <p>With years of experience in architecture and construction, we offer a comprehensive range of services including custom architectural designs, construction management, interior design, and property development. Our dedicated team ensures that your project is delivered with the highest quality and efficiency.</p>
+            <p>At Maiyembe, we provide tailored solutions to meet your specific needs. Our average project completion time is industry-leading, and we pride ourselves on delivering exceptional value.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Services List Section -->
+<section class="services-list">
+    <div class="container">
+        {% for service in services %}
+        <div class="service-item {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+            <div class="service-image">
+                <img src="{{ service.image.url }}" alt="{{ service.title }}">
+            </div>
+            <div class="service-content">
+                <h3>{{ service.title|upper }}</h3>
+                <p>{{ service.short_description }}</p>
+                <ul>
+                    {% for feature in service.features.all|slice:":5" %}
+                    <li>{{ feature.title }}</li>
+                    {% endfor %}
+                </ul>
+                <div class="service-actions">
+                    <a href="{% url 'core:service_detail' service.slug %}" class="btn">LEARN MORE</a>
+                    <a href="{% url 'core:service_request' %}?service={{ service.id }}" class="btn">REQUEST SERVICE</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="services-cta">
+    <div class="container">
+        <h2>CALL US FOR A CONSULTATION</h2>
+        <p>Ready to start your project? Our team is available to discuss your needs.</p>
+        <a href="tel:+254700123456" class="btn"><i class="fas fa-phone"></i> +254 700 123 456</a>
+    </div>
+</section>
+{% endblock %}

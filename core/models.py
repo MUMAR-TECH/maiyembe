@@ -3,7 +3,7 @@ from django.forms import ValidationError
 from django.utils import timezone
 from django.utils.text import slugify
 from django.urls import reverse
-
+from django.conf import settings
 
 class TeamMember(models.Model):
     """Model for team members displayed on the website"""
@@ -20,15 +20,59 @@ class TeamMember(models.Model):
     def __str__(self):
         return self.name
 
-
 class Service(models.Model):
     """Model for services offered by the company"""
+    # Basic Information
     title = models.CharField(max_length=100)
-    description = models.TextField()
-    image = models.ImageField(upload_to='services/')
     slug = models.SlugField(unique=True, blank=True)
+    short_description = models.TextField(help_text="Brief description for cards and listings", null=True, blank=True)
+    full_description = models.TextField(help_text="Detailed description for service page", null=True, blank=True)
+    image = models.ImageField(upload_to='services/')
+    
+    # Service Categories
+    SERVICE_CATEGORIES = [
+        ('design', 'Design & Planning'),
+        ('construction', 'Construction'),
+        ('electrical', 'Electrical'),
+        ('plumbing', 'Plumbing'),
+        ('management', 'Property Management'),
+        ('other', 'Other Services'),
+    ]
+    category = models.CharField(
+        max_length=50,
+        choices=SERVICE_CATEGORIES,
+        default='construction'
+    )
+    
+    # Service Details
+    icon = models.CharField(
+        max_length=50,
+        help_text="Font Awesome icon class (e.g. 'fas fa-home')",
+        blank=True
+    )
+    is_featured = models.BooleanField(default=False)
+    display_order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    is_active = models.BooleanField(default=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='services_created'
+    )
+    last_updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='services_updated'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['display_order']
     
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -41,6 +85,73 @@ class Service(models.Model):
     def get_absolute_url(self):
         return reverse('service_detail', kwargs={'slug': self.slug})
 
+class ServiceFeature(models.Model):
+    """Model for features/benefits of each service"""
+    service = models.ForeignKey(
+        Service,
+        related_name='features',
+        on_delete=models.CASCADE
+    )
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    icon = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Font Awesome icon class (e.g. 'fas fa-check')"
+    )
+    
+    def __str__(self):
+        return f"{self.service.title} - {self.title}"
+
+class ServiceRequest(models.Model):
+    """Model for service requests from clients"""
+    SERVICE_TYPES = [
+        ('general', 'General Inquiry'),
+        ('design', 'Design Consultation'),
+        ('construction', 'Construction Project'),
+        ('electrical', 'Electrical Work'),
+        ('plumbing', 'Plumbing Work'),
+        ('management', 'Property Management'),
+        ('other', 'Other'),
+    ]
+    
+    CONTACT_METHODS = [
+        ('phone', 'Phone Call'),
+        ('email', 'Email'),
+        ('whatsapp', 'WhatsApp'),
+        ('in-person', 'In-Person Meeting'),
+    ]
+    
+    service = models.ForeignKey(
+        Service,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='requests'
+    )
+    service_type = models.CharField(
+        max_length=50,
+        choices=SERVICE_TYPES,
+        default='general'
+    )
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    message = models.TextField()
+    contact_method = models.CharField(
+        max_length=50,
+        choices=CONTACT_METHODS,
+        default='whatsapp'
+    )
+    is_processed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Service Request #{self.id} - {self.name}"
 
 class SliderImage(models.Model):
     """Model for hero section slider images"""
@@ -58,7 +169,6 @@ class SliderImage(models.Model):
     def __str__(self):
         return self.title
 
-
 class Testimonial(models.Model):
     """Model for client testimonials"""
     client_name = models.CharField(max_length=100)
@@ -69,7 +179,6 @@ class Testimonial(models.Model):
     
     def __str__(self):
         return f"Testimonial from {self.client_name}"
-
 
 class ContactMessage(models.Model):
     """Model for storing contact form submissions"""
@@ -85,7 +194,6 @@ class ContactMessage(models.Model):
     
     def __str__(self):
         return f"Message from {self.name} - {self.subject}"
-
 
 class Subscriber(models.Model):
     """Model for newsletter subscribers"""

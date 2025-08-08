@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.views.generic import TemplateView, CreateView, ListView
+from django.views.generic import TemplateView, DetailView, CreateView, ListView
 from django.urls import reverse_lazy
-from .models import TeamMember, Service, SliderImage, Testimonial, Subscriber,About
+from .models import ServiceFeature, ServiceRequest, TeamMember, Service, SliderImage, Testimonial, Subscriber,About
 from blog.models import Post
 from projects.models import Project
-from .forms import ContactForm, SubscriberForm
+from .forms import ContactForm, ServiceCreateForm, ServiceFeatureForm, ServiceRequestForm, ServiceUpdateForm, SubscriberForm
 
 
 class HomePageView(TemplateView):
@@ -40,23 +40,73 @@ class AboutView(TemplateView):
         return context
 
 
-class ServicesView(ListView):
-    """View for the services page"""
+class ServiceListView(ListView):
     model = Service
-    template_name = 'services.html'
+    template_name = 'services/service_list.html'
     context_object_name = 'services'
-
-
-class ServiceDetailView(TemplateView):
-    """View for the service detail page"""
-    template_name = 'service_detail.html'
+    paginate_by = 6
+    
+    def get_queryset(self):
+        queryset = Service.objects.filter(is_active=True).order_by('display_order')
+        
+        # Filter by category if specified
+        category = self.request.GET.get('category')
+        if category:
+            queryset = queryset.filter(category=category)
+        
+        return queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        slug = kwargs.get('slug')
-        context['service'] = Service.objects.get(slug=slug)
+        context['categories'] = Service.SERVICE_CATEGORIES
+        context['current_category'] = self.request.GET.get('category')
+        return context
+    
+class ServiceDetailView(DetailView):
+    model = Service
+    template_name = 'services/service_detail.html'
+    context_object_name = 'service'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        service = self.object
+        
+        # Get related services (same category, excluding current)
+        related_services = Service.objects.filter(
+            category=service.category,
+            is_active=True
+        ).exclude(id=service.id)[:4]
+        
+        context['related_services'] = related_services
         return context
 
+class ServiceRequestView(CreateView):
+    model = ServiceRequest
+    form_class = ServiceRequestForm
+    template_name = 'services/service_request.html'
+    success_url = reverse_lazy('service_request_success')
+    
+    def get_initial(self):
+        initial = super().get_initial()
+        service_id = self.request.GET.get('service')
+        if service_id:
+            try:
+                service = Service.objects.get(id=service_id)
+                initial['service'] = service
+                initial['service_type'] = service.category
+            except Service.DoesNotExist:
+                pass
+        return initial
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Your service request has been submitted successfully!')
+        return response
+
+def service_request_success(request):
+    return render(request, 'services/service_request_success.html')
 
 class ContactView(CreateView):
     """View for handling contact form submissions"""
@@ -109,3 +159,77 @@ class AboutView(TemplateView):
         context['about'] = About.objects.first()  # Get the single About instance
         context['team_members'] = TeamMember.objects.all()
         return context
+
+
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import (
+    ListView, CreateView, UpdateView, DeleteView, DetailView
+)
+from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+
+class DashboardView(LoginRequiredMixin, ListView):
+    template_name = 'dashboard/dashboard.html'
+    context_object_name = 'services'
+    
+    def get_queryset(self):
+        return Service.objects.filter(created_by=self.request.user).order_by('-updated_at')
+
+class ServiceCreateView(LoginRequiredMixin, CreateView):
+    model = Service
+    form_class = ServiceCreateForm
+    template_name = 'dashboard/service_form.html'
+    success_url = reverse_lazy('dashboard')
+    
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        form.instance.last_updated_by = self.request.user
+        messages.success(self.request, 'Service created successfully!')
+        return super().form_valid(form)
+
+class ServiceUpdateView(LoginRequiredMixin, UpdateView):
+    model = Service
+    form_class = ServiceUpdateForm
+    template_name = 'dashboard/service_form.html'
+    success_url = reverse_lazy('dashboard')
+    
+    def form_valid(self, form):
+        form.instance.last_updated_by = self.request.user
+        messages.success(self.request, 'Service updated successfully!')
+        return super().form_valid(form)
+
+class ServiceDeleteView(LoginRequiredMixin, DeleteView):
+    model = Service
+    template_name = 'dashboard/service_confirm_delete.html'
+    success_url = reverse_lazy('dashboard')
+    
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, 'Service deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+
+class ServiceFeatureCreateView(LoginRequiredMixin, CreateView):
+    model = ServiceFeature
+    form_class = ServiceFeatureForm
+    template_name = 'dashboard/feature_form.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('service_update', kwargs={'pk': self.kwargs['service_pk']})
+    
+    def form_valid(self, form):
+        service = get_object_or_404(Service, pk=self.kwargs['service_pk'])
+        form.instance.service = service
+        messages.success(self.request, 'Feature added successfully!')
+        return super().form_valid(form)
+
+class ServiceFeatureDeleteView(LoginRequiredMixin, DeleteView):
+    model = ServiceFeature
+    template_name = 'dashboard/feature_confirm_delete.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('service_update', kwargs={'pk': self.object.service.pk})
+    
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, 'Feature deleted successfully!')
+        return super().delete(request, *args, **kwargs)

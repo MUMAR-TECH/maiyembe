@@ -1,0 +1,131 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard_content %}
+<div class="form-header">
+    <h1>{% if object %}Edit{% else %}Create{% endif %} Service</h1>
+    <a href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'core:dashboard' %}{% endif %}" class="btn btn-back">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <div class="form-row">
+        <div class="form-group">
+            <label for="{{ form.title.id_for_label }}">Service Title</label>
+            {{ form.title }}
+            {{ form.title.errors }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.category.id_for_label }}">Category</label>
+            {{ form.category }}
+            {{ form.category.errors }}
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group">
+            <label for="{{ form.short_description.id_for_label }}">Short Description</label>
+            {{ form.short_description }}
+            {{ form.short_description.errors }}
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group">
+            <label for="{{ form.full_description.id_for_label }}">Full Description</label>
+            {{ form.full_description }}
+            {{ form.full_description.errors }}
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group">
+            <label for="{{ form.image.id_for_label }}">Main Image</label>
+            {{ form.image }}
+            {{ form.image.errors }}
+            {% if object and object.image %}
+            <div class="current-image">
+                <p>Current Image:</p>
+                <img src="{{ object.image.url }}" alt="{{ object.title }}" width="150">
+            </div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.icon.id_for_label }}">Icon Class</label>
+            {{ form.icon }}
+            {{ form.icon.errors }}
+            <small class="form-text text-muted">
+                Font Awesome icon class (e.g. "fas fa-home")
+            </small>
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group form-check">
+            {{ form.is_featured }}
+            <label class="form-check-label" for="{{ form.is_featured.id_for_label }}">
+                Featured Service
+            </label>
+            {{ form.is_featured.errors }}
+        </div>
+        <div class="form-group form-check">
+            {{ form.is_active }}
+            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                Active
+            </label>
+            {{ form.is_active.errors }}
+        </div>
+        {% if form.display_order %}
+        <div class="form-group">
+            <label for="{{ form.display_order.id_for_label }}">Display Order</label>
+            {{ form.display_order }}
+            {{ form.display_order.errors }}
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Save Service
+        </button>
+        {% if object %}
+        <a href="{% url 'service_delete' object.pk %}" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Delete
+        </a>
+        {% endif %}
+    </div>
+</form>
+
+{% if object %}
+<div class="service-features">
+    <h3>Service Features</h3>
+    
+    <div class="feature-list">
+        {% for feature in object.features.all %}
+        <div class="feature-item">
+            <div class="feature-icon">
+                <i class="{{ feature.icon|default:'fas fa-check' }}"></i>
+            </div>
+            <div class="feature-content">
+                <h4>{{ feature.title }}</h4>
+                <p>{{ feature.description }}</p>
+            </div>
+            <div class="feature-actions">
+                <a href="{% url 'feature_delete' feature.pk %}" class="btn btn-sm btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <p>No features added yet.</p>
+        {% endfor %}
+    </div>
+    
+    <a href="{% url 'feature_create' service_pk=object.pk %}" class="btn btn-sm btn-primary">
+        <i class="fas fa-plus"></i> Add Feature
+    </a>
+</div>
+{% endif %}
+{% endblock %}

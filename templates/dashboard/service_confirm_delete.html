@@ -1,0 +1,20 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard_content %}
+<div class="delete-confirmation">
+    <h1>Confirm Deletion</h1>
+    <p>Are you sure you want to delete the service "{{ object.title }}"?</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Yes, Delete
+            </button>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

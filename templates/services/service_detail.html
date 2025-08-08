@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="service-detail">
+    <div class="container">
+        <div class="service-header">
+            <h1>{{ service.title|upper }}</h1>
+            <p class="service-category">{{ service.get_category_display }}</p>
+        </div>
+        
+        <div class="service-content">
+            <div class="service-image">
+                <img src="{{ service.image.url }}" alt="{{ service.title }}">
+            </div>
+            
+            <div class="service-description">
+                <h2>Service Overview</h2>
+                {{ service.full_description|linebreaks }}
+                
+                {% if service.features.all %}
+                <h3>Key Features</h3>
+                <div class="features-grid">
+                    {% for feature in service.features.all %}
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="{{ feature.icon|default:'fas fa-check' }}"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>{{ feature.title }}</h4>
+                            {% if feature.description %}
+                            <p>{{ feature.description }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="service-cta">
+            <a href="https://wa.me/254700123456?text=I'm%20interested%20in%20your%20{{ service.title|urlencode }}%20service.%20Please%20contact%20me%20with%20more%20information." 
+               class="btn btn-whatsapp" 
+               target="_blank">
+               <i class="fab fa-whatsapp"></i> CHAT ON WHATSAPP
+            </a>
+            <a href="{% url 'service_request' %}?service={{ service.id }}" class="btn">REQUEST A CALLBACK</a>
+        </div>
+    </div>
+</section>
+
+<!-- Related Services Section -->
+{% if related_services %}
+<section class="related-services">
+    <div class="container">
+        <h2 class="section-title">RELATED SERVICES</h2>
+        <div class="services-grid">
+            {% for related_service in related_services %}
+            <div class="service-card">
+                <div class="service-image">
+                    <img src="{{ related_service.image.url }}" alt="{{ related_service.title }}">
+                </div>
+                <div class="service-content">
+                    <h3>{{ related_service.title|upper }}</h3>
+                    <p>{{ related_service.short_description }}</p>
+                    <a href="{% url 'service_detail' related_service.slug %}" class="read-more">READ MORE <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

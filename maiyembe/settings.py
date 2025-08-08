@@ -42,15 +42,33 @@ INSTALLED_APPS = [
     'django_summernote',  # Rich text editor for admin
     'crispy_forms',       # Form styling
     'crispy_bootstrap5',  # Bootstrap 5 template pack for crispy forms
-    
+    'rest_framework',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
+
     # Local apps
+    'accounts',
     'core',
     'blog',
     'projects',
     #'index',
 ]
 
+
+AUTH_USER_MODEL = "accounts.User"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+
+#LOGIN_REDIRECT_URL = 'dashboard_redirect'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'  # For better form styling
+
+
 MIDDLEWARE = [
+    'allauth.account.middleware.AccountMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -156,9 +174,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.yourmailserver.com'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'contact@maiyembe.com'
-EMAIL_HOST_PASSWORD = 'your_email_password'
-DEFAULT_FROM_EMAIL = 'contact@maiyembe.com'
+EMAIL_HOST_USER = 'mumarmukuka@gmail.com'
+EMAIL_HOST_PASSWORD = 'erpm nuxs qupg dggm'
+
+# Login URL
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'

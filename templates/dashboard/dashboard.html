@@ -1,0 +1,58 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard_content %}
+<div class="dashboard-header">
+    <h1>Your Services</h1>
+    <a href="{% url 'core:service_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New Service
+    </a>
+</div>
+
+<div class="service-list">
+    {% for service in services %}
+    <div class="service-card">
+        <div class="service-image">
+            {% if service.image %}
+            <img src="{{ service.image.url }}" alt="{{ service.title }}">
+            {% else %}
+            <div class="no-image">No Image</div>
+            {% endif %}
+        </div>
+        <div class="service-info">
+            <h3>{{ service.title }}</h3>
+            <p class="service-category">{{ service.get_category_display }}</p>
+            <p class="service-status">
+                <span class="badge {% if service.is_active %}badge-success{% else %}badge-secondary{% endif %}">
+                    {% if service.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+                {% if service.is_featured %}
+                <span class="badge badge-primary">Featured</span>
+                {% endif %}
+            </p>
+            <p class="service-meta">
+                Created: {{ service.created_at|date:"M d, Y" }}<br>
+                Last Updated: {{ service.updated_at|date:"M d, Y" }}
+            </p>
+        </div>
+        <div class="service-actions">
+            <a href="{% url 'service_update' service.pk %}" class="btn btn-sm btn-edit">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a href="{% url 'service_delete' service.pk %}" class="btn btn-sm btn-delete">
+                <i class="fas fa-trash"></i> Delete
+            </a>
+            <a href="{{ service.get_absolute_url }}" class="btn btn-sm btn-view" target="_blank">
+                <i class="fas fa-eye"></i> View
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="no-services">
+        <p>You haven't created any services yet.</p>
+        <a href="{% url 'core:service_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create Your First Service
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

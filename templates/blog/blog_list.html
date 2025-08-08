@@ -1,0 +1,402 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Blog Header Section -->
+<section class="blog-header" style="background-color: #f5f5f5; padding: 60px 0 40px;">
+    <div class="container">
+        <div class="blog-header-content">
+            <h1 class="section-title">OUR BLOG</h1>
+            <p class="blog-subtitle" style="text-align: center; margin-bottom: 40px; max-width: 700px; margin-left: auto; margin-right: auto;">
+                Insights, trends, and expert advice on architecture, construction, and design.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Blog Content Section -->
+<section class="blog-content-section" style="padding: 40px 0 80px;">
+    <div class="container">
+        <div class="blog-content-container">
+            <!-- Main Blog Content -->
+            <div class="blog-main-content">
+                <!-- Blog List -->
+                <div class="blog-list">
+                    {% for post in posts %}
+                    <article class="blog-post-card">
+                        <div class="blog-post-image">
+                            <a href="{{ post.get_absolute_url }}">
+                                <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="img-fluid">
+                            </a>
+                        </div>
+                        <div class="blog-post-content">
+                            <div class="blog-post-meta">
+                                <span class="post-date"><i class="far fa-calendar-alt"></i> {{ post.published_date|date:"F j, Y" }}</span>
+                                <span class="post-author"><i class="fas fa-user"></i> {{ post.author.get_full_name }}</span>
+                                {% if post.category %}
+                                <span class="post-category"><i class="fas fa-folder"></i> <a href="{% url 'blog:category' post.category.slug %}">{{ post.category.name }}</a></span>
+                                {% endif %}
+                            </div>
+                            <h3 class="post-title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+                            <p class="post-excerpt">{{ post.excerpt }}</p>
+                            <a href="{{ post.get_absolute_url }}" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </article>
+                    {% empty %}
+                    <div class="no-posts-message">
+                        <p>No blog posts available at the moment. Please check back later.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <div class="blog-pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link"><i class="fas fa-chevron-left"></i> Previous</a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <a href="?page={{ num }}" class="pagination-link current">{{ num }}</a>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}" class="pagination-link">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">Next <i class="fas fa-chevron-right"></i></a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Blog Sidebar -->
+            <aside class="blog-sidebar">
+                <!-- Search Widget -->
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">Search Blog</h3>
+                    <form class="blog-search-form" method="get" action="{% url 'blog:search' %}">
+                        <input type="search" name="q" placeholder="Search articles..." aria-label="Search blog articles">
+                        <button type="submit" aria-label="Submit search"><i class="fas fa-search"></i></button>
+                    </form>
+                </div>
+                
+                <!-- Categories Widget -->
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">Categories</h3>
+                    <ul class="categories-list">
+                        {% for category in categories %}
+                        <li>
+                            <a href="{% url 'blog:category' category.slug %}">
+                                {{ category.name }} <span>({{ category.posts.count }})</span>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <!-- Newsletter Widget -->
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">Newsletter</h3>
+                    <p class="widget-description">Subscribe to receive the latest articles and updates directly to your inbox.</p>
+                    <form class="newsletter-form" method="post" action="{% url 'blog:subscribe' %}">
+                        {% csrf_token %}
+                        <input type="email" name="email" placeholder="Your email address" required>
+                        <button type="submit" class="btn">SUBSCRIBE</button>
+                    </form>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Blog Layout */
+    .blog-content-container {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 40px;
+        align-items: start;
+    }
+    
+    .blog-main-content {
+        grid-column: 1;
+    }
+    
+    .blog-sidebar {
+        grid-column: 2;
+        position: sticky;
+        top: 100px;
+    }
+    
+    /* Blog Post Cards */
+    .blog-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .blog-post-card {
+        background-color: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .blog-post-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .blog-post-image {
+        height: 250px;
+        overflow: hidden;
+    }
+    
+    .blog-post-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .blog-post-card:hover .blog-post-image img {
+        transform: scale(1.05);
+    }
+    
+    .blog-post-content {
+        padding: 30px;
+    }
+    
+    .blog-post-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: #777;
+    }
+    
+    .blog-post-meta i {
+        margin-right: 5px;
+    }
+    
+    .post-title {
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+    
+    .post-title a {
+        color: #222;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .post-title a:hover {
+        color: #c19a6b;
+    }
+    
+    .post-excerpt {
+        color: #555;
+        margin-bottom: 20px;
+        line-height: 1.7;
+    }
+    
+    .read-more-btn {
+        display: inline-flex;
+        align-items: center;
+        color: #c19a6b;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .read-more-btn i {
+        margin-left: 8px;
+        transition: transform 0.3s ease;
+    }
+    
+    .read-more-btn:hover {
+        color: #a5825a;
+    }
+    
+    .read-more-btn:hover i {
+        transform: translateX(3px);
+    }
+    
+    /* Pagination */
+    .blog-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 60px;
+    }
+    
+    .pagination-link {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 15px;
+        background-color: #f5f5f5;
+        color: #555;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination-link i {
+        font-size: 12px;
+    }
+    
+    .pagination-link:hover {
+        background-color: #e0e0e0;
+    }
+    
+    .pagination-link.current {
+        background-color: #c19a6b;
+        color: #fff;
+    }
+    
+    /* Sidebar Widgets */
+    .sidebar-widget {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .widget-title {
+        font-size: 20px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+        color: #222;
+    }
+    
+    .widget-description {
+        color: #777;
+        margin-bottom: 20px;
+        font-size: 15px;
+    }
+    
+    /* Search Form */
+    .blog-search-form {
+        position: relative;
+    }
+    
+    .blog-search-form input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    .blog-search-form button {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #c19a6b;
+        cursor: pointer;
+    }
+    
+    /* Categories List */
+    .categories-list {
+        list-style: none;
+    }
+    
+    .categories-list li {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .categories-list li:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    
+    .categories-list a {
+        display: flex;
+        justify-content: space-between;
+        color: #555;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .categories-list a:hover {
+        color: #c19a6b;
+    }
+    
+    .categories-list span {
+        color: #999;
+    }
+    
+    /* Newsletter Form */
+    .newsletter-form input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    /* No Posts Message */
+    .no-posts-message {
+        text-align: center;
+        padding: 40px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Mobile Styles */
+    @media (max-width: 992px) {
+        .blog-content-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .blog-sidebar {
+            grid-column: 1;
+            position: static;
+            margin-top: 50px;
+        }
+        
+        .blog-post-image {
+            height: 200px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .blog-header {
+            padding: 40px 0 20px;
+        }
+        
+        .blog-post-meta {
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .blog-post-content {
+            padding: 20px;
+        }
+        
+        .post-title {
+            font-size: 20px;
+        }
+        
+        .blog-pagination {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+{% endblock %}

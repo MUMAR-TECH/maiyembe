@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-header">
+            <h3>MAIYEMBE DASHBOARD</h3>
+            <p>Welcome, {{ request.user.get_full_name|default:request.user.username }}</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'core:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{% url 'core:service_create' %}" class="{% if request.resolver_match.url_name == 'service_create' %}active{% endif %}">
+                <i class="fas fa-plus-circle"></i> Add Service
+            </a>
+            <a href="{% url 'core:services' %}">
+                <i class="fas fa-eye"></i> View Live
+            </a>
+            <a href="{% url 'accounts:logout' %}">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </nav>
+    </aside>
+    
+    <main class="dashboard-content">
+        {% if messages %}
+        <div class="dashboard-messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% block dashboard_content %}
+        {% endblock %}
+    </main>
+</div>
+{% endblock %}

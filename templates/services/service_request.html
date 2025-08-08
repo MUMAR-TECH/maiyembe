@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="service-request">
+    <div class="container">
+        <div class="request-header">
+            <h1>REQUEST OUR SERVICES</h1>
+            <p>Fill out the form below and our team will contact you shortly</p>
+        </div>
+        
+        <div class="request-container">
+            <div class="request-info">
+                <h3>Why Choose Us?</h3>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> 15+ years of experience</li>
+                    <li><i class="fas fa-check-circle"></i> Certified professionals</li>
+                    <li><i class="fas fa-check-circle"></i> Quality guaranteed</li>
+                    <li><i class="fas fa-check-circle"></i> Competitive pricing</li>
+                </ul>
+                
+                <div class="contact-methods">
+                    <h4>Prefer to contact us directly?</h4>
+                    <a href="tel:+254700123456" class="contact-method">
+                        <i class="fas fa-phone"></i>
+                        <span>+254 700 123 456</span>
+                    </a>
+                    <a href="mailto:info@maiyembe.com" class="contact-method">
+                        <i class="fas fa-envelope"></i>
+                        <span>info@maiyembe.com</span>
+                    </a>
+                    <a href="https://wa.me/254700123456" class="contact-method" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>Chat on WhatsApp</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="request-form">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="form-group">
+                        <label for="{{ form.service.id_for_label }}">Service Interested In</label>
+                        {{ form.service }}
+                        {{ form.service.errors }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.service_type.id_for_label }}">Service Type</label>
+                        {{ form.service_type }}
+                        {{ form.service_type.errors }}
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.name.id_for_label }}">Your Name</label>
+                            {{ form.name }}
+                            {{ form.name.errors }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.email.id_for_label }}">Your Email</label>
+                            {{ form.email }}
+                            {{ form.email.errors }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.phone.id_for_label }}">Phone Number</label>
+                            {{ form.phone }}
+                            {{ form.phone.errors }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.contact_method.id_for_label }}">Preferred Contact Method</label>
+                            {{ form.contact_method }}
+                            {{ form.contact_method.errors }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.message.id_for_label }}">Project Details</label>
+                        {{ form.message }}
+                        {{ form.message.errors }}
+                    </div>
+                    
+                    <button type="submit" class="btn">SUBMIT REQUEST</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

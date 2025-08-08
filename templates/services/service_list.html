@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Services Hero Section -->
+<section class="services-hero">
+    <div class="services-hero-content">
+        <h1>OUR COMPANY SERVICES</h1>
+        <p>We offer a range of premium services designed to meet your construction and architectural needs.</p>
+    </div>
+</section>
+
+<!-- Services Category Filter -->
+<section class="services-filter">
+    <div class="container">
+        <div class="category-filter">
+            <a href="{% url 'core:services' %}" class="{% if not current_category %}active{% endif %}">All Services</a>
+            {% for value, label in categories %}
+            <a href="{% url 'core:services' %}?category={{ value }}" 
+               class="{% if current_category == value %}active{% endif %}">
+               {{ label }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Services List Section -->
+<section class="services-list">
+    <div class="container">
+        {% if services %}
+            {% for service in services %}
+            <div class="service-item {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+                <div class="service-image">
+                    <img src="{{ service.image.url }}" alt="{{ service.title }}">
+                </div>
+                <div class="service-content">
+                    <h3>{{ service.title|upper }}</h3>
+                    <p>{{ service.short_description }}</p>
+                    <ul>
+                        {% for feature in service.features.all|slice:":5" %}
+                        <li>{{ feature.title }}</li>
+                        {% endfor %}
+                    </ul>
+                    <div class="service-actions">
+                        <a href="{% url 'core:service_detail' service.slug %}" class="btn">LEARN MORE</a>
+                        <a href="{% url 'core:service_request' %}?service={{ service.id }}" class="btn">REQUEST SERVICE</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}" class="btn">Previous</a>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <a href="?page={{ num }}{% if current_category %}&category={{ current_category }}{% endif %}" class="btn active">{{ num }}</a>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a href="?page={{ num }}{% if current_category %}&category={{ current_category }}{% endif %}" class="btn">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}" class="btn">Next</a>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+        {% else %}
+            <div class="no-services">
+                <p>No services available in this category.</p>
+                <a href="{% url 'core:services' %}" class="btn">View All Services</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="services-cta">
+    <div class="container">
+        <h2>READY TO START YOUR PROJECT?</h2>
+        <p>Contact us today to discuss your requirements with our experts.</p>
+        <div class="cta-buttons">
+            <a href="tel:+254700123456" class="btn"><i class="fas fa-phone"></i> CALL US</a>
+            <a href="{% url 'core:service_request' %}" class="btn">REQUEST A QUOTE</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -2,7 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 from django.urls import reverse
-from django.contrib.auth.models import User
+from accounts.models import User
+
 
 
 class Category(models.Model):
@@ -52,3 +53,13 @@ class Post(models.Model):
     
     def get_absolute_url(self):
         return reverse('blog:post_detail', kwargs={'slug': self.slug})
+
+
+class Comment(models.Model):
+    blog = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on {self.blog.title}"
