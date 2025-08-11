@@ -22,7 +22,7 @@ app_name = 'core'
 urlpatterns = [
     path('', HomePageView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
-    #path('services/', ServiceListView.as_view(), name='services'),
+    path('services/', ServiceListView.as_view(), name='services'),
     #path('services/<slug:slug>/', ServiceDetailView.as_view(), name='service_detail'),
     path('contact/', ContactView.as_view(), name='contact'),
     path('subscribe/', subscribe_newsletter, name='subscribe'),
@@ -31,8 +31,9 @@ urlpatterns = [
 
     path('services/', ServiceListView.as_view(), name='services'),
     path('services/<slug:slug>/', ServiceDetailView.as_view(), name='service_detail'),
-    path('services/request/', ServiceRequestView.as_view(), name='service_request'),
+    #path('services/request/', ServiceRequestView.as_view(), name='service_request'),
     path('services/request/success/', service_request_success, name='service_request_success'),
+    path('services/request/', ServiceRequestView.as_view(), name='service_request'),
 
     # Dashboard URLs
     path('dashboard/', DashboardView.as_view(), name='dashboard'),

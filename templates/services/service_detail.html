@@ -40,12 +40,70 @@
         </div>
         
         <div class="service-cta">
-            <a href="https://wa.me/254700123456?text=I'm%20interested%20in%20your%20{{ service.title|urlencode }}%20service.%20Please%20contact%20me%20with%20more%20information." 
+            <a href="https://wa.me/260779838119?text=I'm%20interested%20in%20your%20{{ service.title|urlencode }}%20service.%20Please%20contact%20me%20with%20more%20information." 
                class="btn btn-whatsapp" 
                target="_blank">
                <i class="fab fa-whatsapp"></i> CHAT ON WHATSAPP
             </a>
-            <a href="{% url 'service_request' %}?service={{ service.id }}" class="btn">REQUEST A CALLBACK</a>
+        </div>
+        
+        <!-- Service Request Form -->
+        <!-- Service Request Form -->
+        <div class="service-request-form">
+            <h2>Request This Service</h2>
+            
+            <div id="messagePopup" class="message-popup" style="display: none;">
+                <div class="message-content">
+                    <span class="message-text"></span>
+                    <button onclick="closeMessagePopup()" class="close-btn">&times;</button>
+                </div>
+            </div>
+
+            <form method="post" action="{% url 'core:service_request' %}" id="serviceRequestForm">
+                {% csrf_token %}
+                
+                <!-- Hidden field for the service -->
+                {{ service_request_form.service }}
+                
+                <div class="form-group">
+                    <label for="{{ service_request_form.name.id_for_label }}">Your Name *</label>
+                    {{ service_request_form.name }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ service_request_form.email.id_for_label }}">Email Address *</label>
+                    {{ service_request_form.email }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ service_request_form.phone.id_for_label }}">Phone Number *</label>
+                    {{ service_request_form.phone }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ service_request_form.message.id_for_label }}">Message *</label>
+                    {{ service_request_form.message }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ service_request_form.contact_method.id_for_label }}">Preferred Contact Method *</label>
+                    {{ service_request_form.contact_method }}
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Submit Request</button>
+                </div>
+            </form>
+            
+            {% if messages %}
+            <div class="messages" style="display:none;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" data-message="{{ message }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>

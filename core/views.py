@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.generic import TemplateView, DetailView, CreateView, ListView
 from django.urls import reverse_lazy
+from django.http import JsonResponse
 from .models import ServiceFeature, ServiceRequest, TeamMember, Service, SliderImage, Testimonial, Subscriber,About
 from blog.models import Post
 from projects.models import Project
@@ -79,32 +80,27 @@ class ServiceDetailView(DetailView):
             is_active=True
         ).exclude(id=service.id)[:4]
         
+        # Initialize the service request form with the current service pre-selected
+        initial_data = {'service': service.id}
+        context['service_request_form'] = ServiceRequestForm(initial=initial_data)
         context['related_services'] = related_services
         return context
 
 class ServiceRequestView(CreateView):
-    model = ServiceRequest
+    """View for handling service request form submissions"""
     form_class = ServiceRequestForm
-    template_name = 'services/service_request.html'
-    success_url = reverse_lazy('service_request_success')
-    
-    def get_initial(self):
-        initial = super().get_initial()
-        service_id = self.request.GET.get('service')
-        if service_id:
-            try:
-                service = Service.objects.get(id=service_id)
-                initial['service'] = service
-                initial['service_type'] = service.category
-            except Service.DoesNotExist:
-                pass
-        return initial
+    template_name = 'services/service_detail.html'  # or create a separate template
+    success_url = reverse_lazy('core:service_request_success')
     
     def form_valid(self, form):
-        response = super().form_valid(form)
-        messages.success(self.request, 'Your service request has been submitted successfully!')
-        return response
-
+        form.save()
+        messages.success(self.request, 'Your service request has been submitted. We will contact you soon!')
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        messages.error(self.request, 'Please correct the errors in the form.')
+        return super().form_invalid(form)
+    
 def service_request_success(request):
     return render(request, 'services/service_request_success.html')
 
@@ -176,6 +172,11 @@ class DashboardView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         return Service.objects.filter(created_by=self.request.user).order_by('-updated_at')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['service_requests'] = ServiceRequest.objects.all().order_by('-created_at')
+        return context
 
 class ServiceCreateView(LoginRequiredMixin, CreateView):
     model = Service

@@ -8,6 +8,34 @@
     </a>
 </div>
 
+<!-- Service Requests Section -->
+<div class="service-requests">
+    <h2>Service Requests</h2>
+    <div class="requests-list">
+        {% for request in service_requests %}
+        <div class="request-card">
+            <div class="request-header">
+                <h4>{{ request.service.title }}</h4>
+                <span class="request-date">{{ request.created_at|date:"M d, Y" }}</span>
+            </div>
+            <div class="request-details">
+                <p><strong>From:</strong> {{ request.name }}</p>
+                <p><strong>Email:</strong> {{ request.email }}</p>
+                <p><strong>Phone:</strong> {{ request.phone }}</p>
+                <p><strong>Message:</strong> {{ request.message }}</p>
+            </div>
+            <div class="request-status">
+                <span class="badge {% if request.is_processed %}badge-success{% else %}badge-warning{% endif %}">
+                    {% if request.is_processed %}Processed{% else %}Pending{% endif %}
+                </span>
+            </div>
+        </div>
+        {% empty %}
+        <p>No service requests yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
 <div class="service-list">
     {% for service in services %}
     <div class="service-card">
@@ -35,13 +63,13 @@
             </p>
         </div>
         <div class="service-actions">
-            <a href="{% url 'service_update' service.pk %}" class="btn btn-sm btn-edit">
+            <a href="{% url 'core:service_update' service.pk %}" class="btn btn-sm btn-edit">
                 <i class="fas fa-edit"></i> Edit
             </a>
-            <a href="{% url 'service_delete' service.pk %}" class="btn btn-sm btn-delete">
+            <a href="{% url 'core:service_delete' service.pk %}" class="btn btn-sm btn-delete">
                 <i class="fas fa-trash"></i> Delete
             </a>
-            <a href="{{ service.get_absolute_url }}" class="btn btn-sm btn-view" target="_blank">
+            <a href="{% url 'core:service_detail' service.pk %}" class="btn btn-sm btn-view" target="_blank">
                 <i class="fas fa-eye"></i> View
             </a>
         </div>

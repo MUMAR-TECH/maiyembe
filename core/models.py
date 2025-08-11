@@ -146,7 +146,7 @@ class ServiceRequest(models.Model):
     is_processed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+    seen = models.BooleanField(default=False)
     class Meta:
         ordering = ['-created_at']
     
