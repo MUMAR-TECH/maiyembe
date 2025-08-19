@@ -1,4 +1,5 @@
 from django.urls import path
+from . import views
 from .views import (
     DashboardView,
     HomePageView,
@@ -10,7 +11,7 @@ from .views import (
     ServiceListView,
     ServiceDetailView,
     ContactView,
-    ServiceRequestView,
+    #ServiceRequestView,
     ServiceUpdateView,
     service_request_success,
     subscribe_newsletter,
@@ -22,18 +23,17 @@ app_name = 'core'
 urlpatterns = [
     path('', HomePageView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
-    path('services/', ServiceListView.as_view(), name='services'),
-    #path('services/<slug:slug>/', ServiceDetailView.as_view(), name='service_detail'),
     path('contact/', ContactView.as_view(), name='contact'),
     path('subscribe/', subscribe_newsletter, name='subscribe'),
     path('team/', TeamListView.as_view(), name='team'),
 
-
-    path('services/', ServiceListView.as_view(), name='services'),
+    # Services URLs
+    path('services/', ServiceListView.as_view(), name='service_list'),
     path('services/<slug:slug>/', ServiceDetailView.as_view(), name='service_detail'),
     #path('services/request/', ServiceRequestView.as_view(), name='service_request'),
     path('services/request/success/', service_request_success, name='service_request_success'),
-    path('services/request/', ServiceRequestView.as_view(), name='service_request'),
+    path('services/request/submit/', views.submit_service_request, name='submit_service_request'),
+
 
     # Dashboard URLs
     path('dashboard/', DashboardView.as_view(), name='dashboard'),

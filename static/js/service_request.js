@@ -21,29 +21,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Handle form submission
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-        fetch(form.action, {
-            method: 'POST',
-            body: new FormData(form),
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showMessagePopup(data.message, true);
-                form.reset();
-            } else {
-                showMessagePopup(data.message || 'An error occurred. Please try again.', false);
-            }
-        })
-        .catch(error => {
-            showMessagePopup('An error occurred. Please try again.', false);
+            // Show loading state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Submitting...';
+            submitBtn.disabled = true;
+
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showMessagePopup(data.message, true);
+                    form.reset();
+                } else {
+                    showMessagePopup(data.message || 'An error occurred. Please try again.', false);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Fallback to regular form submission
+                showMessagePopup('Submitting form...', true);
+                form.submit();
+            })
+            .finally(() => {
+                // Restore button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
         });
-    });
+    }
 
     // Check for messages on page load
     const messages = document.querySelectorAll('.messages .alert');

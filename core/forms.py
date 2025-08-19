@@ -43,47 +43,42 @@ class SubscriberForm(forms.ModelForm):
         }
 
 class ServiceRequestForm(forms.ModelForm):
-    """Form for service requests with WhatsApp integration"""
+    """Form for service requests"""
     class Meta:
         model = ServiceRequest
         fields = ['service', 'name', 'email', 'phone', 'message', 'contact_method']
         widgets = {
-            'service': forms.Select(attrs={
+            'name': forms.TextInput(attrs={
                 'class': 'form-control',
+                'placeholder': 'Your Name',
                 'required': True
             }),
-            'name': forms.TextInput(attrs={
-                'placeholder': 'Your Full Name',
-                'required': True,
-                'class': 'form-control'
-            }),
             'email': forms.EmailInput(attrs={
+                'class': 'form-control',
                 'placeholder': 'Your Email',
-                'required': True,
-                'class': 'form-control'
+                'required': True
             }),
             'phone': forms.TextInput(attrs={
-                'placeholder': 'Your Phone Number',
-                'required': True,
-                'class': 'form-control'
+                'class': 'form-control',
+                'placeholder': 'Your Phone',
+                'required': True
             }),
             'message': forms.Textarea(attrs={
-                'placeholder': 'Tell us about your project...',
-                'required': True,
                 'class': 'form-control',
-                'rows': 5
+                'placeholder': 'Tell us about your project...',
+                'rows': 5,
+                'required': True
             }),
             'contact_method': forms.Select(attrs={
                 'class': 'form-control',
                 'required': True
-            })
+            }),
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Set WhatsApp as default contact method
+        self.fields['service'].widget = forms.HiddenInput()
         self.fields['contact_method'].initial = 'whatsapp'
-
 
 class ServiceCreateForm(forms.ModelForm):
     class Meta:

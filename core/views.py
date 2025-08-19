@@ -6,7 +6,14 @@ from django.http import JsonResponse
 from .models import ServiceFeature, ServiceRequest, TeamMember, Service, SliderImage, Testimonial, Subscriber,About
 from blog.models import Post
 from projects.models import Project
+
 from .forms import ContactForm, ServiceCreateForm, ServiceFeatureForm, ServiceRequestForm, ServiceUpdateForm, SubscriberForm
+
+
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+
 
 
 class HomePageView(TemplateView):
@@ -37,6 +44,7 @@ class AboutView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['about'] = About.objects.first()  # Get the single About instance
         context['team_members'] = TeamMember.objects.all()
         return context
 
@@ -72,35 +80,34 @@ class ServiceDetailView(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        service = self.object
-        
-        # Get related services (same category, excluding current)
-        related_services = Service.objects.filter(
-            category=service.category,
-            is_active=True
-        ).exclude(id=service.id)[:4]
-        
-        # Initialize the service request form with the current service pre-selected
-        initial_data = {'service': service.id}
-        context['service_request_form'] = ServiceRequestForm(initial=initial_data)
-        context['related_services'] = related_services
+        context['service_request_form'] = ServiceRequestForm(
+            initial={'service': self.object.id}
+        )
         return context
 
-class ServiceRequestView(CreateView):
-    """View for handling service request form submissions"""
-    form_class = ServiceRequestForm
-    template_name = 'services/service_detail.html'  # or create a separate template
-    success_url = reverse_lazy('core:service_request_success')
+
+@require_POST
+def submit_service_request(request):
+    form = ServiceRequestForm(request.POST)
+    if form.is_valid():
+        service_request = form.save()
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'message': 'Your request has been submitted successfully!'
+            })
+        messages.success(request, 'Your request has been submitted successfully!')
+        return redirect('core:service_request_success')
     
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Your service request has been submitted. We will contact you soon!')
-        return super().form_valid(form)
-    
-    def form_invalid(self, form):
-        messages.error(self.request, 'Please correct the errors in the form.')
-        return super().form_invalid(form)
-    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': False,
+            'errors': form.errors.get_json_data()
+        })
+    messages.error(request, 'Please correct the errors below.')
+    return redirect('core:service_detail', slug=form.cleaned_data.get('service').slug)
+
+
 def service_request_success(request):
     return render(request, 'services/service_request_success.html')
 
@@ -144,16 +151,6 @@ class TeamListView(ListView):
         # Split team members into leadership and regular team members
         context['leadership_team'] = TeamMember.objects.filter(is_leadership=True)
         context['regular_team'] = TeamMember.objects.filter(is_leadership=False)
-        return context
-
-class AboutView(TemplateView):
-    """View for the about page"""
-    template_name = 'about.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['about'] = About.objects.first()  # Get the single About instance
-        context['team_members'] = TeamMember.objects.all()
         return context
 
 
