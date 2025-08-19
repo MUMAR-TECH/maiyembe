@@ -14,9 +14,9 @@
 <section class="services-filter">
     <div class="container">
         <div class="category-filter">
-            <a href="{% url 'core:services' %}" class="{% if not current_category %}active{% endif %}">All Services</a>
+            <a href="{% url 'core:service_list' %}" class="{% if not current_category %}active{% endif %}">All Services</a>
             {% for value, label in categories %}
-            <a href="{% url 'core:services' %}?category={{ value }}" 
+            <a href="{% url 'core:service_list' %}?category={{ value }}" 
                class="{% if current_category == value %}active{% endif %}">
                {{ label }}
             </a>
@@ -44,7 +44,7 @@
                     </ul>
                     <div class="service-actions">
                         <a href="{% url 'core:service_detail' service.slug %}" class="btn">LEARN MORE</a>
-                        <a href="{% url 'core:service_request' %}?service={{ service.id }}" class="btn">REQUEST SERVICE</a>
+                        <a href="{% url 'core:submit_service_request' %}?service={{ service.id }}" class="btn">REQUEST SERVICE</a>
                     </div>
                 </div>
             </div>
@@ -87,7 +87,7 @@
         <p>Contact us today to discuss your requirements with our experts.</p>
         <div class="cta-buttons">
             <a href="tel:+254700123456" class="btn"><i class="fas fa-phone"></i> CALL US</a>
-            <a href="{% url 'core:service_request' %}" class="btn">REQUEST A QUOTE</a>
+            <a href="{% url 'core:submit_service_request' %}" class="btn">REQUEST A QUOTE</a>
         </div>
     </div>
 </section>

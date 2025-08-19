@@ -14,7 +14,7 @@
             <a href="{% url 'core:service_create' %}" class="{% if request.resolver_match.url_name == 'service_create' %}active{% endif %}">
                 <i class="fas fa-plus-circle"></i> Add Service
             </a>
-            <a href="{% url 'core:services' %}">
+            <a href="{% url 'core:service_list' %}">
                 <i class="fas fa-eye"></i> View Live
             </a>
             <a href="{% url 'accounts:logout' %}">

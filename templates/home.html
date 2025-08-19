@@ -164,29 +164,44 @@
                         <div class="contact-info-text">
                             <h4>HEADQUARTERS</h4>
                             <p>Solwezi</p>
-                            <p>Nairobi CBD, Kenya</p>
+                            <p>Zambia</p>
                         </div>
                     </div>
+                    
                     <div class="contact-info-item">
                         <div class="contact-info-icon">
                             <i class="fas fa-phone"></i>
                         </div>
                         <div class="contact-info-text">
                             <h4>PHONE</h4>
-                            <p>Main: +254 700 123 456</p>
-                            <p>Sales: +254 722 987 654</p>
+                            <p>Main: <a href="tel:+260779838119">+260 779 838 119</a></p>
+                            <p>Sales: <a href="tel:+260779838119">+260 779 838 119</a></p>
                         </div>
                     </div>
+                    
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h4>WHATSAPP</h4>
+                            <p><a href="https://wa.me/260779838119?text=I'm%20interested%20in%20your%20services.%20Please%20contact%20me." target="_blank">
+                                Chat with us on WhatsApp
+                            </a></p>
+                        </div>
+                    </div>
+                    
                     <div class="contact-info-item">
                         <div class="contact-info-icon">
                             <i class="fas fa-envelope"></i>
                         </div>
                         <div class="contact-info-text">
                             <h4>EMAIL</h4>
-                            <p>info@maiyembe.com</p>
-                            <p>support@maiyembe.com</p>
+                            <p><a href="mailto:info@maiyembe.com">info@maiyembe.com</a></p>
+                            <p><a href="mailto:support@maiyembe.com">support@maiyembe.com</a></p>
                         </div>
                     </div>
+                    
                     <div class="contact-info-item">
                         <div class="contact-info-icon">
                             <i class="fas fa-clock"></i>
@@ -198,7 +213,18 @@
                         </div>
                     </div>
                     
+                    <!-- Quick Contact Buttons -->
+                    <div class="quick-contact-buttons">
+                        <a href="tel:+260779838119" class="quick-btn phone-btn">
+                            <i class="fas fa-phone"></i> Call Now
+                        </a>
+                        <a href="https://wa.me/260779838119?text=I'm%20interested%20in%20your%20services.%20Please%20contact%20me." 
+                        class="quick-btn whatsapp-btn" target="_blank">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </a>
+                    </div>
                 </div>
+                
                 <div class="contact-form">
                     <form method="post" action="{% url 'core:contact' %}">
                         {% csrf_token %}
@@ -353,6 +379,140 @@
     transform: translateY(-2px);
 }
 
+/* Contact Section Styles */
+.contact {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+.contact-info-item {
+    margin-bottom: 25px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.contact-info-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.contact-info-text h4 {
+    color: #222;
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+.contact-info-text p {
+    color: #666;
+    margin: 2px 0;
+}
+
+.contact-info-text a {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-info-text a:hover {
+    color: var(--primary-color);
+}
+
+.quick-contact-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.quick-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.phone-btn {
+    background: var(--primary-color);
+    color: white;
+}
+
+.whatsapp-btn {
+    background: #25D366;
+    color: white;
+}
+
+.quick-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.contact-form {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.contact-form textarea {
+    height: 120px;
+    resize: vertical;
+}
+
+.contact-form .btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.contact-form .btn:hover {
+    background: var(--primary-color-dark);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .contact-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .quick-contact-buttons {
+        justify-content: center;
+    }
+    
+    .quick-btn {
+        flex: 1;
+        min-width: 140px;
+        justify-content: center;
+    }
+}
 /* Responsive Styles */
 @media (max-width: 768px) {
     .services-grid {

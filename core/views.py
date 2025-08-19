@@ -115,7 +115,7 @@ class ContactView(CreateView):
     """View for handling contact form submissions"""
     form_class = ContactForm
     template_name = 'contact.html'
-    success_url = reverse_lazy('contact')
+    success_url = reverse_lazy('core:service_request_success')  # Changed to success page
     
     def form_valid(self, form):
         form.save()
