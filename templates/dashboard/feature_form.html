@@ -1,0 +1,44 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard_content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>Add Feature to {{ service.title }}</h1>
+        <a href="{% url 'core:service_update' service.pk %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Service
+        </a>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.title.id_for_label }}">Feature Title *</label>
+            {{ form.title }}
+            {{ form.title.errors }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Description</label>
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.icon.id_for_label }}">Icon Class</label>
+            {{ form.icon }}
+            {{ form.icon.errors }}
+            <small style="color: var(--text-light); font-size: 0.9rem;">
+                Font Awesome icon class (e.g. "fas fa-check")
+            </small>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Feature
+            </button>
+            <a href="{% url 'core:service_update' service.pk %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
