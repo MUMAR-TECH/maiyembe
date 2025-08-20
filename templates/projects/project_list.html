@@ -1,0 +1,546 @@
+<!-- templates/projects/project_list.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="projects-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>Our Portfolio</h1>
+        <p>Discover our exceptional construction and architectural projects</p>
+    </div>
+</div>
+
+<section class="projects-section">
+    <div class="container">
+        <!-- Category Filter -->
+        <div class="projects-filter">
+            <div class="filter-header">
+                <h2>Browse Our Projects</h2>
+                <p>Filter by category to find specific project types</p>
+            </div>
+            <div class="category-filters">
+                <a href="{% url 'projects:project_list' %}" 
+                   class="filter-btn {% if not current_category %}active{% endif %}">
+                    All Projects
+                </a>
+                {% for category in categories %}
+                <a href="{% url 'projects:category' category.slug %}" 
+                   class="filter-btn {% if current_category.slug == category.slug %}active{% endif %}">
+                    {{ category.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Projects Grid -->
+        <div class="projects-grid">
+            {% for project in projects %}
+            <div class="project-card">
+                <div class="project-image">
+                    <img src="{{ project.featured_image.url }}" alt="{{ project.title }}">
+                    <div class="project-overlay">
+                        <div class="project-status {{ project.status }}">{{ project.get_status_display }}</div>
+                        <div class="project-actions">
+                            <a href="{{ project.get_absolute_url }}" class="view-btn">
+                                <i class="fas fa-eye"></i> View Project
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-content">
+                    <div class="project-category">
+                        {% with project.get_primary_category as primary_category %}
+                        {% if primary_category %}
+                        <span class="category-badge">{{ primary_category.name }}</span>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <h3>{{ project.title }}</h3>
+                    <p class="project-location">
+                        <i class="fas fa-map-marker-alt"></i> {{ project.location }}
+                    </p>
+                    <p class="project-description">
+                        {{ project.description|truncatewords:20 }}
+                    </p>
+                    <div class="project-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>{{ project.completion_date|date:"M Y" }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-building"></i>
+                            <span>{{ project.client }}</span>
+                        </div>
+                    </div>
+                    <a href="{{ project.get_absolute_url }}" class="project-link">
+                        View Full Project <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-projects">
+                <i class="fas fa-folder-open"></i>
+                <h3>No Projects Found</h3>
+                <p>There are no projects available in this category at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="page-btn">
+                <i class="fas fa-chevron-left"></i> Previous
+            </a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="page-btn active">{{ num }}</span>
+            {% else %}
+            <a href="?page={{ num }}" class="page-btn">{{ num }}</a>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="page-btn">
+                Next <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="projects-cta">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Start Your Project?</h2>
+            <p>Let's discuss your construction or architectural needs and bring your vision to life</p>
+            <div class="cta-buttons">
+                <a href="{% url 'core:contact' %}" class="btn btn-primary">
+                    <i class="fas fa-envelope"></i> Get Free Consultation
+                </a>
+                <a href="https://wa.me/260779838119" class="btn btn-whatsapp" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Projects Hero */
+.projects-hero {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-top: 80px;
+    text-align: center;
+    color: white;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    padding: 0 20px;
+}
+
+.hero-content h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+/* Projects Section */
+.projects-section {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+/* Filter Section */
+.projects-filter {
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.filter-header h2 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.filter-header p {
+    color: #7f8c8d;
+    margin-bottom: 30px;
+}
+
+.category-filters {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.filter-btn {
+    padding: 12px 25px;
+    background: white;
+    border: 2px solid #e74c3c;
+    color: #e74c3c;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background: #e74c3c;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Projects Grid */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.project-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.project-image {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+}
+
+.project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.project-card:hover .project-image img {
+    transform: scale(1.1);
+}
+
+.project-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.project-card:hover .project-overlay {
+    opacity: 1;
+}
+
+.project-status {
+    align-self: flex-start;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.project-status.completed {
+    background: #27ae60;
+    color: white;
+}
+
+.project-status.ongoing {
+    background: #f39c12;
+    color: white;
+}
+
+.project-status.upcoming {
+    background: #3498db;
+    color: white;
+}
+
+.project-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.view-btn {
+    padding: 10px 20px;
+    background: #e74c3c;
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.view-btn:hover {
+    background: #c0392b;
+}
+
+.project-content {
+    padding: 25px;
+}
+
+.project-category {
+    margin-bottom: 10px;
+}
+
+.category-badge {
+    background: #f8f9fa;
+    color: #7f8c8d;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.project-content h3 {
+    font-size: 1.4rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.project-location {
+    color: #7f8c8d;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.project-description {
+    color: #5d6d7e;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.project-meta {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.meta-item i {
+    color: #e74c3c;
+}
+
+.project-link {
+    color: #e74c3c;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap 0.3s ease;
+}
+
+.project-link:hover {
+    gap: 12px;
+}
+
+/* No Projects */
+.no-projects {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #7f8c8d;
+}
+
+.no-projects i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: #bdc3c7;
+}
+
+.no-projects h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 40px;
+}
+
+.page-btn {
+    padding: 10px 18px;
+    background: white;
+    border: 2px solid #e74c3c;
+    color: #e74c3c;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.page-btn:hover,
+.page-btn.active {
+    background: #e74c3c;
+    color: white;
+}
+
+/* CTA Section */
+.projects-cta {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    padding: 80px 0;
+    text-align: center;
+}
+
+.cta-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.cta-content p {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    opacity: 0.9;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background: #e74c3c;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #c0392b;
+}
+
+.btn-whatsapp {
+    background: #25d366;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.btn-whatsapp:hover {
+    background: #128c7e;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .category-filters {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .filter-btn {
+        width: 200px;
+        text-align: center;
+    }
+    
+    .project-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn-primary,
+    .btn-whatsapp {
+        width: 250px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .project-content {
+        padding: 20px;
+    }
+    
+    .pagination {
+        flex-wrap: wrap;
+    }
+}
+</style>
+{% endblock %}

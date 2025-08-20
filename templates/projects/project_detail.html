@@ -1,0 +1,1196 @@
+<!-- templates/projects/project_detail.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="project-detail-hero" style="background-image: url('{{ project.featured_image.url }}')">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <div class="breadcrumb">
+            <a href="{% url 'projects:project_list' %}">Projects</a>
+            <span>/</span>
+            {% with project.get_primary_category as primary_category %}
+            {% if primary_category %}
+            <a href="{% url 'projects:category' primary_category.slug %}">{{ primary_category.name }}</a>
+            <span>/</span>
+            {% endif %}
+            {% endwith %}
+            <span>{{ project.title }}</span>
+        </div>
+        <h1>{{ project.title }}</h1>
+        <p class="project-location">
+            <i class="fas fa-map-marker-alt"></i> {{ project.location }}
+        </p>
+        <div class="project-meta-hero">
+            <div class="meta-item">
+                <i class="fas fa-calendar"></i>
+                <span>Completed: {{ project.completion_date|date:"F Y" }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-building"></i>
+                <span>Client: {{ project.client }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-eye"></i>
+                <span>{{ project.views }} Views</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="project-detail-section">
+    <div class="container">
+        <div class="project-detail-content">
+            <!-- Main Content -->
+            <div class="project-main">
+                <!-- Project Gallery -->
+                <div class="project-gallery">
+                    <div class="gallery-main">
+                        <div class="main-image">
+                            <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" id="main-gallery-image">
+                        </div>
+                    </div>
+                    {% if project.images.exists or project.videos.exists %}
+                    <div class="gallery-thumbnails">
+                        <!-- Featured image thumbnail -->
+                        <div class="thumbnail active" data-image="{{ project.featured_image.url }}">
+                            <img src="{{ project.featured_image.url }}" alt="Main Image">
+                        </div>
+                        
+                        <!-- Additional images -->
+                        {% for image in project.images.all %}
+                        <div class="thumbnail" data-image="{{ image.image.url }}">
+                            <img src="{{ image.image.url }}" alt="{{ image.caption|default:project.title }}">
+                        </div>
+                        {% endfor %}
+                        
+                        <!-- Video thumbnails -->
+                        {% for video in project.videos.all %}
+                        <div class="thumbnail video-thumbnail" data-video="{{ video.video_url }}">
+                            <img src="https://img.youtube.com/vi/{{ video.video_url|slice:'-11:' }}/hqdefault.jpg" alt="Video">
+                            <div class="play-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Project Description -->
+                <div class="project-description">
+                    <h2>Project Overview</h2>
+                    <div class="description-content">
+                        {{ project.description|linebreaks }}
+                    </div>
+                </div>
+
+                <!-- Project Features -->
+                {% if project.features.exists %}
+                <div class="project-features">
+                    <h2>Key Features</h2>
+                    <div class="features-grid">
+                        {% for feature in project.features.all %}
+                        <div class="feature-item">
+                            {% if feature.icon %}
+                            <div class="feature-icon">
+                                <i class="{{ feature.icon }}"></i>
+                            </div>
+                            {% endif %}
+                            <div class="feature-content">
+                                <h4>{{ feature.title }}</h4>
+                                {% if feature.description %}
+                                <p>{{ feature.description }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Project Specifications -->
+                <div class="project-specs">
+                    <h2>Project Specifications</h2>
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <span class="spec-label">Status</span>
+                            <span class="spec-value {{ project.status }}">{{ project.get_status_display }}</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Location</span>
+                            <span class="spec-value">{{ project.location }}</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Completion Date</span>
+                            <span class="spec-value">{{ project.completion_date|date:"F d, Y" }}</span>
+                        </div>
+                        {% if project.project_duration %}
+                        <div class="spec-item">
+                            <span class="spec-label">Duration</span>
+                            <span class="spec-value">{{ project.project_duration }}</span>
+                        </div>
+                        {% endif %}
+                        {% if project.budget %}
+                        <div class="spec-item">
+                            <span class="spec-label">Budget</span>
+                            <span class="spec-value">${{ project.budget|floatformat:0 }}</span>
+                        </div>
+                        {% endif %}
+                        {% if project.size %}
+                        <div class="spec-item">
+                            <span class="spec-label">Size</span>
+                            <span class="spec-value">{{ project.size }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Testimonials -->
+                {% if project.testimonials.exists %}
+                <div class="project-testimonials">
+                    <h2>Client Testimonials</h2>
+                    <div class="testimonials-slider">
+                        {% for testimonial in project.testimonials.all %}
+                        <div class="testimonial-item">
+                            <div class="testimonial-content">
+                                <div class="rating">
+                                    {% for i in "12345" %}
+                                    <i class="fas fa-star{% if forloop.counter > testimonial.rating %}-o{% endif %}"></i>
+                                    {% endfor %}
+                                </div>
+                                <p>"{{ testimonial.testimonial }}"</p>
+                            </div>
+                            <div class="testimonial-author">
+                                {% if testimonial.avatar %}
+                                <img src="{{ testimonial.avatar.url }}" alt="{{ testimonial.client_name }}">
+                                {% else %}
+                                <div class="avatar-placeholder">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                {% endif %}
+                                <div class="author-info">
+                                    <h4>{{ testimonial.client_name }}</h4>
+                                    {% if testimonial.client_position %}
+                                    <p>{{ testimonial.client_position }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar - Inquiry Form -->
+            <div class="project-sidebar">
+                <div class="inquiry-form-container">
+                    <h3>Request Similar Service</h3>
+                    <p>Interested in a similar project? Contact us for a free consultation.</p>
+                    
+                    {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <form method="post" action="{% url 'projects:project_inquiry' project.slug %}" class="inquiry-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input type="text" name="name" placeholder="Your Name" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" name="email" placeholder="Email Address" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" name="phone" placeholder="Phone Number" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <select name="service_type" required class="form-control">
+                                <option value="">Select Service Type</option>
+                                <option value="residential">Residential Construction</option>
+                                <option value="commercial">Commercial Construction</option>
+                                <option value="renovation">Renovation</option>
+                                <option value="design">Architectural Design</option>
+                                <option value="consultation">Consultation</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select name="budget_range" required class="form-control">
+                                <option value="">Select Budget Range</option>
+                                <option value="under-50k">Under $50,000</option>
+                                <option value="50k-100k">$50,000 - $100,000</option>
+                                <option value="100k-250k">$100,000 - $250,000</option>
+                                <option value="250k-500k">$250,000 - $500,000</option>
+                                <option value="500k-1m">$500,000 - $1 Million</option>
+                                <option value="over-1m">Over $1 Million</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="project_description" placeholder="Tell us about your project..." rows="4" required class="form-control"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-paper-plane"></i> Send Request
+                        </button>
+                    </form>
+            
+                    <div class="quick-contact-options">
+                        <p class="divider">Or contact us directly</p>
+                        <a href="https://wa.me/260779838119?text=I'm interested in a project like {{ project.title|urlencode }}" 
+                           class="btn btn-whatsapp btn-block" target="_blank">
+                            <i class="fab fa-whatsapp"></i> WhatsApp Us
+                        </a>
+                        <a href="tel:+260779838119" class="btn btn-call btn-block">
+                            <i class="fas fa-phone"></i> Call Now
+                        </a>
+                        <a href="mailto:info@maiyembe.com?subject=Inquiry about {{ project.title|urlencode }}" 
+                           class="btn btn-email btn-block">
+                            <i class="fas fa-envelope"></i> Send Email
+                        </a>
+                    </div>
+                </div>
+            
+
+                <!-- Project Summary -->
+                <div class="project-summary">
+                    <h4>Project Summary</h4>
+                    <div class="summary-item">
+                        <span>Category:</span>
+                        <span>
+                            {% for category in project.categories.all %}
+                            {{ category.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Client:</span>
+                        <span>{{ project.client }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Location:</span>
+                        <span>{{ project.location }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Completion:</span>
+                        <span>{{ project.completion_date|date:"F Y" }}</span>
+                    </div>
+                    {% if project.budget %}
+                    <div class="summary-item">
+                        <span>Budget:</span>
+                        <span>${{ project.budget|floatformat:0 }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Share Project -->
+                <div class="share-project">
+                    <h4>Share This Project</h4>
+                    <div class="share-buttons">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                           target="_blank" class="share-btn facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?text=Check out this project: {{ project.title }}&url={{ request.build_absolute_uri }}" 
+                           target="_blank" class="share-btn twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}" 
+                           target="_blank" class="share-btn linkedin">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="whatsapp://send?text=Check out this project: {{ project.title }} {{ request.build_absolute_uri }}" 
+                           class="share-btn whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Projects -->
+{% if related_projects %}
+<section class="related-projects">
+    <div class="container">
+        <h2>Related Projects</h2>
+        <div class="related-projects-grid">
+            {% for related_project in related_projects %}
+            <div class="related-project-card">
+                <a href="{{ related_project.get_absolute_url }}">
+                    <img src="{{ related_project.featured_image.url }}" alt="{{ related_project.title }}">
+                    <div class="related-project-overlay">
+                        <h4>{{ related_project.title }}</h4>
+                        <p>{{ related_project.location }}</p>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Video Modal -->
+<div class="modal" id="videoModal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="video-container">
+            <iframe id="videoFrame" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Project Detail Hero */
+.project-detail-hero {
+    height: 500px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    margin-top: 80px;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+}
+
+.breadcrumb {
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.breadcrumb a {
+    color: #e74c3c;
+    text-decoration: none;
+}
+
+.breadcrumb span {
+    margin: 0 10px;
+    color: #bdc3c7;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.project-location {
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.project-meta-hero {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(231, 76, 60, 0.9);
+    padding: 8px 15px;
+    border-radius: 20px;
+}
+
+/* Project Detail Section */
+.project-detail-section {
+    padding: 80px 0;
+}
+
+.project-detail-content {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 40px;
+}
+
+/* Project Gallery */
+.project-gallery {
+    margin-bottom: 40px;
+}
+
+.gallery-main {
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.main-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+}
+
+.gallery-thumbnails {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+}
+
+.thumbnail {
+    position: relative;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 3px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+.thumbnail.active {
+    border-color: #e74c3c;
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+}
+
+.video-thumbnail .play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(231, 76, 60, 0.9);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+/* Project Description */
+.project-description {
+    margin-bottom: 40px;
+}
+
+.project-description h2 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.description-content {
+    line-height: 1.8;
+    color: #5d6d7e;
+}
+
+/* Project Features */
+.project-features {
+    margin-bottom: 40px;
+}
+
+.project-features h2 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.feature-item {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-2px);
+}
+
+.feature-icon {
+    width: 50px;
+    height: 50px;
+    background: #e74c3c;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.feature-content h4 {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.feature-content p {
+    color: #7f8c8d;
+    line-height: 1.6;
+}
+
+/* Project Specifications */
+.project-specs {
+    margin-bottom: 40px;
+}
+
+.project-specs h2 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+.specs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.spec-label {
+    font-weight: 600;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.spec-value {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.spec-value.completed {
+    color: #27ae60;
+}
+
+.spec-value.ongoing {
+    color: #f39c12;
+}
+
+.spec-value.upcoming {
+    color: #3498db;
+}
+
+/* Testimonials */
+.project-testimonials {
+    margin-bottom: 40px;
+}
+
+.project-testimonials h2 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+.testimonials-slider {
+    display: grid;
+    gap: 20px;
+}
+
+.testimonial-item {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.rating {
+    color: #f39c12;
+    margin-bottom: 15px;
+}
+
+.testimonial-content p {
+    font-style: italic;
+    color: #5d6d7e;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.testimonial-author img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #e74c3c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.author-info h4 {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.author-info p {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+/* Sidebar */
+.project-sidebar {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+}
+
+.inquiry-form-container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.inquiry-form-container h3 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.inquiry-form-container p {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #e74c3c;
+    outline: none;
+}
+
+.btn-block {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.btn-primary {
+    background: #e74c3c;
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #c0392b;
+}
+
+.btn-whatsapp {
+    background: #25d366;
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+.btn-whatsapp:hover {
+    background: #128c7e;
+}
+
+.btn-call {
+    background: #3498db;
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+.btn-call:hover {
+    background: #2980b9;
+}
+
+.btn-email {
+    background: #9b59b6;
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+.btn-email:hover {
+    background: #8e44ad;
+}
+
+.quick-contact-options {
+    margin-top: 20px;
+}
+
+.divider {
+    text-align: center;
+    position: relative;
+    margin: 20px 0;
+    color: #7f8c8d;
+}
+
+.divider:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #ddd;
+    z-index: 1;
+}
+
+.divider {
+    background: white;
+    position: relative;
+    z-index: 2;
+    padding: 0 15px;
+}
+
+/* Project Summary */
+.project-summary {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.project-summary h4 {
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-item span:first-child {
+    font-weight: 600;
+    color: #7f8c8d;
+}
+
+.summary-item span:last-child {
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+/* Share Project */
+.share-project {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.share-project h4 {
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.share-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.share-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.share-btn:hover {
+    transform: translateY(-3px);
+}
+
+.share-btn.facebook {
+    background: #3b5998;
+}
+
+.share-btn.twitter {
+    background: #1da1f2;
+}
+
+.share-btn.linkedin {
+    background: #0077b5;
+}
+
+.share-btn.whatsapp {
+    background: #25d366;
+}
+
+/* Related Projects */
+.related-projects {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+.related-projects h2 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 50px;
+    font-weight: 700;
+}
+
+.related-projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.related-project-card {
+    position: relative;
+    height: 250px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.related-project-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.related-project-card:hover img {
+    transform: scale(1.1);
+}
+
+.related-project-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 20px;
+    color: white;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.related-project-card:hover .related-project-overlay {
+    transform: translateY(0);
+}
+
+.related-project-overlay h4 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.related-project-overlay p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Video Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.modal-content {
+    position: relative;
+    margin: 5% auto;
+    width: 80%;
+    max-width: 800px;
+}
+
+.close-modal {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .project-detail-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .project-sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.2rem;
+    }
+    
+    .project-meta-hero {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .main-image img {
+        height: 300px;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .specs-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .related-projects-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+    
+    .project-description h2,
+    .project-features h2,
+    .project-specs h2,
+    .project-testimonials h2 {
+        font-size: 1.5rem;
+    }
+    
+    .gallery-thumbnails {
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    }
+    
+    .thumbnail img {
+        height: 60px;
+    }
+}
+
+
+/* Add to the CSS section */
+.messages {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-warning {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+</style>
+
+<script>
+// Gallery functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Image gallery
+    const thumbnails = document.querySelectorAll('.thumbnail:not(.video-thumbnail)');
+    const mainImage = document.getElementById('main-gallery-image');
+    
+    thumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', function() {
+            const imageUrl = this.getAttribute('data-image');
+            mainImage.src = imageUrl;
+            
+            // Update active state
+            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+    
+    // Video modal functionality
+    const videoThumbnails = document.querySelectorAll('.video-thumbnail');
+    const modal = document.getElementById('videoModal');
+    const videoFrame = document.getElementById('videoFrame');
+    const closeModal = document.querySelector('.close-modal');
+    
+    videoThumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', function() {
+            const videoUrl = this.getAttribute('data-video');
+            
+            // Convert YouTube URL to embed URL
+            let embedUrl = videoUrl;
+            if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+                const videoId = videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/)[1];
+                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            } else if (videoUrl.includes('vimeo.com')) {
+                const videoId = videoUrl.match(/vimeo\.com\/(?:channels\/\w+\/)?(\d+)/)[1];
+                embedUrl = `https://player.vimeo.com/video/${videoId}`;
+            }
+            
+            videoFrame.src = embedUrl;
+            modal.style.display = 'block';
+        });
+    });
+    
+    closeModal.addEventListener('click', function() {
+        modal.style.display = 'none';
+        videoFrame.src = '';
+    });
+    
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+            videoFrame.src = '';
+        }
+    });
+    
+    // Increment project views
+    fetch(`/projects/{{ project.slug }}/increment-views/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    });
+});
+</script>
+{% endblock %}

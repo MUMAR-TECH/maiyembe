@@ -1,0 +1,7 @@
+update the home page section for projects so that the project's image/video can redirect the user to the project details page 
+
+create the project creation features
+
+create populate the db with at least 5 projects
+
+create the admin section for managing the projects and all the projects related information
