@@ -4,12 +4,12 @@
 <div class="form-container">
     <div class="form-header">
         <h1>{% if object %}Edit{% else %}Create{% endif %} Service</h1>
-        <a href="{% if object %}{% url 'core:dashboard' %}{% else %}{% url 'core:dashboard' %}{% endif %}" class="btn btn-secondary">
+        <a href="{% url 'core:dashboard' %}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
     </div>
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" id="serviceForm">
         {% csrf_token %}
         
         <div class="form-row">
@@ -42,7 +42,14 @@
         <div class="form-row">
             <div class="form-group">
                 <label for="{{ form.image.id_for_label }}">Main Image *</label>
-                {{ form.image }}
+                <div class="file-upload">
+                    <label for="{{ form.image.id_for_label }}" class="file-upload-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Choose an image...</span>
+                    </label>
+                    {{ form.image }}
+                    <div class="file-name" id="fileName">No file chosen</div>
+                </div>
                 {{ form.image.errors }}
                 {% if object and object.image %}
                 <div class="current-image">
@@ -52,11 +59,23 @@
                 {% endif %}
             </div>
             <div class="form-group">
-                <label for="{{ form.icon.id_for_label }}">Icon Class</label>
-                {{ form.icon }}
-                {{ form.icon.errors }}
+                <label for="iconSelect">Icon Selection</label>
+                <div class="icon-selector">
+                    <div class="icon-search">
+                        <input type="text" id="iconSearch" placeholder="Search icons...">
+                    </div>
+                    <div class="icon-grid" id="iconGrid">
+                        <!-- Icons will be populated by JavaScript -->
+                    </div>
+                    <div class="selected-icon-preview">
+                        <span>Selected: </span>
+                        <span id="selectedIconPreview"><i class="fas fa-question"></i> None</span>
+                    </div>
+                    {{ form.icon }}
+                    {{ form.icon.errors }}
+                </div>
                 <small style="color: var(--text-light); font-size: 0.9rem;">
-                    Font Awesome icon class (e.g. "fas fa-home")
+                    Select an icon that represents your service
                 </small>
             </div>
         </div>
@@ -89,6 +108,42 @@
             {% endif %}
         </div>
         
+        <!-- Service Features Section -->
+        <div class="features-section">
+            <h3>Service Features</h3>
+            <p class="section-description">Add key features that highlight this service</p>
+            
+            <div id="featureForms">
+                <!-- Feature forms will be added here dynamically -->
+                {% if object and object.features.all %}
+                    {% for feature in object.features.all %}
+                    <div class="feature-form" data-feature-id="{{ feature.id }}">
+                        <input type="hidden" name="feature_ids" value="{{ feature.id }}">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Feature Title</label>
+                                <input type="text" name="feature_titles" value="{{ feature.title }}" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Feature Icon</label>
+                                <input type="text" name="feature_icons" value="{{ feature.icon }}" class="form-control" placeholder="fas fa-check">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="feature_descriptions" class="form-control" rows="2">{{ feature.description }}</textarea>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm remove-feature">Remove Feature</button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            <button type="button" id="addFeature" class="btn btn-secondary">
+                <i class="fas fa-plus"></i> Add Feature
+            </button>
+        </div>
+        
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-save"></i> {% if object %}Update{% else %}Create{% endif %} Service
@@ -101,36 +156,311 @@
             <a href="{% url 'core:dashboard' %}" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
-
-    {% if object %}
-    <div class="service-features" style="margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--border-color);">
-        <h3>Service Features</h3>
-        
-        <div class="feature-list" style="margin: 20px 0;">
-            {% for feature in object.features.all %}
-            <div class="feature-item" style="display: flex; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px;">
-                <div class="feature-icon" style="width: 40px; height: 40px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                    <i class="{{ feature.icon|default:'fas fa-check' }}"></i>
-                </div>
-                <div class="feature-content" style="flex: 1;">
-                    <h4 style="margin: 0 0 5px 0; color: var(--text-dark);">{{ feature.title }}</h4>
-                    <p style="margin: 0; color: var(--text-light);">{{ feature.description }}</p>
-                </div>
-                <div class="feature-actions">
-                    <a href="{% url 'core:feature_delete' feature.pk %}" class="btn btn-sm btn-danger">
-                        <i class="fas fa-trash"></i>
-                    </a>
-                </div>
-            </div>
-            {% empty %}
-            <p style="text-align: center; color: var(--text-light); padding: 20px;">No features added yet.</p>
-            {% endfor %}
-        </div>
-        
-        <a href="{% url 'core:feature_create' service_pk=object.pk %}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Add Feature
-        </a>
-    </div>
-    {% endif %}
 </div>
+
+<!-- Feature Template (Hidden) -->
+<div id="featureTemplate" class="feature-form" style="display: none;">
+    <div class="form-row">
+        <div class="form-group">
+            <label>Feature Title</label>
+            <input type="text" name="feature_titles" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label>Feature Icon</label>
+            <input type="text" name="feature_icons" class="form-control" placeholder="fas fa-check">
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Description</label>
+        <textarea name="feature_descriptions" class="form-control" rows="2"></textarea>
+    </div>
+    <button type="button" class="btn btn-danger btn-sm remove-feature">Remove Feature</button>
+</div>
+
+<style>
+    /* Modern form styling */
+    .form-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        padding: 30px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-control {
+        border: 1px solid #e1e5eb;
+        border-radius: 6px;
+        padding: 12px 15px;
+        transition: all 0.3s;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(193, 154, 107, 0.15);
+    }
+    
+    /* File upload styling */
+    .file-upload {
+        position: relative;
+    }
+    
+    .file-upload-label {
+        display: block;
+        padding: 12px 15px;
+        background: #f8f9fa;
+        border: 1px dashed #ced4da;
+        border-radius: 6px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .file-upload-label:hover {
+        background: #e9ecef;
+        border-color: var(--primary-color);
+    }
+    
+    .file-upload input[type="file"] {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+    }
+    
+    .file-name {
+        margin-top: 8px;
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+    
+    /* Icon selector styling */
+    .icon-selector {
+        border: 1px solid #e1e5eb;
+        border-radius: 6px;
+        padding: 15px;
+        background: #fff;
+    }
+    
+    .icon-search {
+        margin-bottom: 15px;
+    }
+    
+    .icon-search input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #e1e5eb;
+        border-radius: 4px;
+    }
+    
+    .icon-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 10px;
+        border: 1px solid #f1f1f1;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+    
+    .icon-item {
+        text-align: center;
+        padding: 10px 5px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .icon-item:hover {
+        background: #f8f9fa;
+        transform: scale(1.1);
+    }
+    
+    .icon-item.selected {
+        background: rgba(193, 154, 107, 0.1);
+        color: var(--primary-color);
+    }
+    
+    .selected-icon-preview {
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        text-align: center;
+    }
+    
+    /* Features section styling */
+    .features-section {
+        margin-top: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .section-description {
+        color: var(--text-light);
+        margin-bottom: 20px;
+    }
+    
+    .feature-form {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        border-left: 3px solid var(--primary-color);
+    }
+    
+    .remove-feature {
+        margin-top: 10px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .form-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .icon-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .icon-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // File upload preview
+        const fileInput = document.querySelector('input[type="file"]');
+        const fileName = document.getElementById('fileName');
+        
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                fileName.textContent = this.files[0] ? this.files[0].name : 'No file chosen';
+            });
+        }
+        
+        // Icon selection functionality
+        const iconSelect = document.getElementById('{{ form.icon.id_for_label }}');
+        const iconGrid = document.getElementById('iconGrid');
+        const iconSearch = document.getElementById('iconSearch');
+        const selectedIconPreview = document.getElementById('selectedIconPreview');
+        
+        // Common service-related icons
+        const serviceIcons = [
+            'fas fa-home', 'fas fa-building', 'fas fa-tools', 'fas fa-hammer', 
+            'fas fa-paint-roller', 'fas fa-wrench', 'fas fa-bolt', 'fas fa-plug',
+            'fas fa-faucet', 'fas fa-tint', 'fas fa-fire-extinguisher', 
+            'fas fa-hard-hat', 'fas fa-ruler-combined', 'fas fa-pencil-ruler',
+            'fas fa-truck', 'fas fa-box', 'fas fa-cube', 'fas fa-cubes',
+            'fas fa-concierge-bell', 'fas fa-clipboard-check', 'fas fa-check-circle',
+            'fas fa-cogs', 'fas fa-cog', 'fas fa-lightbulb', 'fas fa-key',
+            'fas fa-lock', 'fas fa-unlock', 'fas fa-shield-alt', 'fas fa-certificate',
+            'fas fa-award', 'fas fa-medal', 'fas fa-star', 'fas fa-thumbs-up',
+            'fas fa-handshake', 'fas fa-users', 'fas fa-user-tie', 'fas fa-headset',
+            'fas fa-phone-alt', 'fas fa-envelope', 'fas fa-comments', 'fas fa-calendar-alt',
+            'fas fa-clock', 'fas fa-money-bill-wave', 'fas fa-credit-card', 'fas fa-receipt'
+        ];
+        
+        // Populate icon grid
+        function populateIcons(filter = '') {
+            iconGrid.innerHTML = '';
+            const filteredIcons = serviceIcons.filter(icon => 
+                icon.toLowerCase().includes(filter.toLowerCase())
+            );
+            
+            filteredIcons.forEach(icon => {
+                const iconItem = document.createElement('div');
+                iconItem.className = 'icon-item';
+                if (iconSelect.value === icon) {
+                    iconItem.classList.add('selected');
+                }
+                iconItem.innerHTML = `<i class="${icon} fa-lg"></i>`;
+                iconItem.addEventListener('click', function() {
+                    // Remove selected class from all icons
+                    document.querySelectorAll('.icon-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked icon
+                    this.classList.add('selected');
+                    
+                    // Update the hidden input and preview
+                    iconSelect.value = icon;
+                    selectedIconPreview.innerHTML = `<i class="${icon}"></i> ${icon}`;
+                });
+                iconGrid.appendChild(iconItem);
+            });
+            
+            // Update preview if an icon is already selected
+            if (iconSelect.value) {
+                selectedIconPreview.innerHTML = `<i class="${iconSelect.value}"></i> ${iconSelect.value}`;
+            }
+        }
+        
+        // Initial icon population
+        populateIcons();
+        
+        // Filter icons based on search
+        if (iconSearch) {
+            iconSearch.addEventListener('input', function() {
+                populateIcons(this.value);
+            });
+        }
+        
+        // Feature management
+        const featureForms = document.getElementById('featureForms');
+        const addFeatureBtn = document.getElementById('addFeature');
+        const featureTemplate = document.getElementById('featureTemplate');
+        
+        // Add feature form
+        addFeatureBtn.addEventListener('click', function() {
+            const newFeature = featureTemplate.cloneNode(true);
+            newFeature.style.display = 'block';
+            newFeature.querySelector('.remove-feature').addEventListener('click', function() {
+                newFeature.remove();
+            });
+            featureForms.appendChild(newFeature);
+        });
+        
+        // Remove feature event delegation
+        featureForms.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-feature')) {
+                e.target.closest('.feature-form').remove();
+            }
+        });
+        
+        // Initialize existing remove buttons
+        document.querySelectorAll('.remove-feature').forEach(button => {
+            button.addEventListener('click', function() {
+                this.closest('.feature-form').remove();
+            });
+        });
+    });
+</script>
 {% endblock %}

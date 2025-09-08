@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ProjectCategory, Project, ProjectImage
+from .models import ProjectCategory, Project, ProjectFeature, ProjectImage, ProjectInquiry, ProjectTestimonial, ProjectVideo
 
 
 class ProjectImageInline(admin.TabularInline):
@@ -32,3 +32,9 @@ class ProjectImageAdmin(admin.ModelAdmin):
     list_filter = ('project', 'is_landscape')
     list_editable = ('is_landscape', 'order')
     search_fields = ('project__title', 'caption')
+
+
+admin.site.register(ProjectVideo)
+admin.site.register(ProjectFeature)
+admin.site.register(ProjectTestimonial)
+admin.site.register(ProjectInquiry)

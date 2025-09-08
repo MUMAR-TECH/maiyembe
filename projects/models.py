@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 import os
-
+from accounts.models import User
 
 class ProjectCategory(models.Model):
     """Model for project categories"""
@@ -52,7 +52,8 @@ class Project(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     views = models.PositiveIntegerField(default=0)
-    
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_projects')
+    last_updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='updated_projects')
     # SEO fields
     meta_title = models.CharField(max_length=200, blank=True)
     meta_description = models.TextField(blank=True)

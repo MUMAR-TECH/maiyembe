@@ -180,6 +180,15 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mumarmukuka@gmail.com'
 EMAIL_HOST_PASSWORD = 'erpm nuxs qupg dggm'
 
+
+# Admin email for notifications
+ADMIN_EMAIL = 'developergood3@gmail.com'
+
+# Site name for emails
+SITE_NAME = 'Maiyembe Construction'
+
+
+
 # Login URL
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'home'

@@ -1,34 +1,32 @@
 {% extends 'base.html' %}
-{% block title %}Login | Eventify{% endblock %}
+{% block title %}Login | Maiyembe{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow-lg border-0">
-                <div class="card-body p-5">
-                    <div class="text-center mb-4">
-                        <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
-                        <h2 class="fw-bold">Welcome Back</h2>
-                        <p class="text-muted">Please login to your account</p>
-                    </div>
+<div class="login-container">
+    <div class="login-box">
+        <div class="login-content">
+            <div class="text-center mb-4">
+                <i class="fas fa-building fa-3x mb-3" style="color: #c19a6b;"></i>
+                <h2 class="welcome-title">Welcome Back</h2>
+                <p class="welcome-subtitle">Sign in to your Maiyembe account</p>
+            </div>
 
-                    {% if form.non_field_errors %}
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        {{ form.non_field_errors|join:", " }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    {% endif %}
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                {{ form.non_field_errors|join:", " }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
 
-                    <form method="post" novalidate>
+                    <form method="post" novalidate class="login-form">
                         {% csrf_token %}
-                        <div class="mb-3">
+                        <div class="form-group">
                             <label for="{{ form.username.id_for_label }}" class="form-label">
-                                <i class="fas fa-envelope me-2 text-muted"></i>Email Address
+                                <i class="fas fa-envelope me-2"></i>Email Address
                             </label>
                             <input type="email" name="{{ form.username.name }}" 
-                                   class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                                   class="form-input {% if form.username.errors %}is-invalid{% endif %}"
                                    id="{{ form.username.id_for_label }}"
                                    placeholder="Enter your email address"
                                    value="{{ form.username.value|default:'' }}"
@@ -40,17 +38,17 @@
                             {% endif %}
                         </div>
 
-                        <div class="mb-3">
+                        <div class="form-group">
                             <label for="{{ form.password.id_for_label }}" class="form-label">
-                                <i class="fas fa-lock me-2 text-muted"></i>Password
+                                <i class="fas fa-lock me-2"></i>Password
                             </label>
-                            <div class="input-group">
+                            <div class="password-input-group">
                                 <input type="password" name="{{ form.password.name }}"
-                                       class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                                       class="form-input {% if form.password.errors %}is-invalid{% endif %}"
                                        id="{{ form.password.id_for_label }}"
                                        placeholder="Enter your password"
                                        required>
-                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <button class="password-toggle" type="button" id="togglePassword">
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 {% if form.password.errors %}
@@ -61,24 +59,26 @@
                             </div>
                         </div>
 
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
                             </button>
                         </div>
                     </form>
 
-                    <div class="text-center mt-4">
-                        <a href="{% url 'accounts:password_reset' %}" class="text-decoration-none">
-                            <i class="fas fa-key me-1"></i>Forgot password?
+                    <div class="forgot-password">
+                        <a href="{% url 'accounts:password_reset' %}">
+                            <i class="fas fa-key me-1"></i>Forgot your password?
                         </a>
                     </div>
 
-                    <hr class="my-4">
+                    <div class="login-divider">
+                        <span>or</span>
+                    </div>
 
-                    <div class="text-center">
-                        <p class="mb-0">Don't have an account?</p>
-                        <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary mt-2">
+                    <div class="register-prompt">
+                        <p>Don't have an account?</p>
+                        <a href="{% url 'accounts:register' %}" class="btn btn-outline">
                             <i class="fas fa-user-plus me-2"></i>Create Account
                         </a>
                     </div>
@@ -89,9 +89,121 @@
 </div>
 
 <style>
-    .alert {
-        border-radius: 0.5rem;
+    .login-container {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        background-color: #f9f9f9;
+    }
+
+    .login-box {
+        width: 100%;
+        max-width: 420px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .login-content {
+        padding: 40px;
+    }
+
+    .welcome-title {
+        color: #222;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .welcome-subtitle {
+        color: #666;
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+
+    .login-form .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .form-label i {
+        color: #c19a6b;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px 15px;
+        font-size: 15px;
+        border: 1.5px solid #e0e0e0;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        border-color: #c19a6b;
+        box-shadow: 0 0 0 3px rgba(193, 154, 107, 0.1);
+        outline: none;
+    }
+
+    .password-input-group {
+        position: relative;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
         border: none;
+        color: #666;
+        cursor: pointer;
+        padding: 0;
+        font-size: 16px;
+        transition: color 0.3s ease;
+    }
+
+    .password-toggle:hover {
+        color: #c19a6b;
+    }
+
+    .form-actions {
+        margin-top: 30px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 12px 20px;
+        background-color: #c19a6b;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #a5825a;
+        transform: translateY(-1px);
+    }
+
+    .alert {
+        border-radius: 6px;
+        border: none;
+        padding: 12px 16px;
+        margin-bottom: 24px;
+        font-size: 14px;
     }
     
     .alert-danger {
@@ -99,26 +211,100 @@
         color: #dc3545;
     }
 
-    .form-control {
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        border-radius: 0.5rem;
-        border: 1.5px solid #dee2e6;
+    .forgot-password {
+        text-align: center;
+        margin-top: 24px;
     }
 
-    .form-control:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    .forgot-password a {
+        color: #666;
+        font-size: 14px;
+        text-decoration: none;
+        transition: color 0.3s ease;
     }
 
-    .input-group .btn {
-        border-top-right-radius: 0.5rem !important;
-        border-bottom-right-radius: 0.5rem !important;
+    .forgot-password a:hover {
+        color: #c19a6b;
+    }
+
+    .login-divider {
+        text-align: center;
+        margin: 24px 0;
+        position: relative;
+    }
+
+    .login-divider::before,
+    .login-divider::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: calc(50% - 30px);
+        height: 1px;
+        background-color: #e0e0e0;
+    }
+
+    .login-divider::before {
+        left: 0;
+    }
+
+    .login-divider::after {
+        right: 0;
+    }
+
+    .login-divider span {
+        background-color: #fff;
+        padding: 0 15px;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .register-prompt {
+        text-align: center;
+    }
+
+    .register-prompt p {
+        color: #666;
+        margin-bottom: 12px;
+        font-size: 14px;
+    }
+
+    .btn-outline {
+        background-color: transparent;
+        border: 2px solid #c19a6b;
+        color: #c19a6b;
+        padding: 10px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-outline:hover {
+        background-color: #c19a6b;
+        color: white;
     }
 
     .invalid-feedback {
-        font-size: 0.875rem;
+        font-size: 13px;
+        color: #dc3545;
+        margin-top: 6px;
         font-weight: 500;
+    }
+
+    @media (max-width: 480px) {
+        .login-content {
+            padding: 30px 20px;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+        }
+
+        .btn-primary,
+        .btn-outline {
+            padding: 10px 16px;
+            font-size: 15px;
+        }
     }
 </style>
 

@@ -1,0 +1,498 @@
+<!-- templates/projects/project_form.html -->
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block dashboard_content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>{% if object %}Edit Project{% else %}Create New Project{% endif %}</h1>
+        <a href="{% url 'projects:project_dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Projects
+        </a>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="project-form">
+        {% csrf_token %}
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Project Title *</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div class="error">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.client.id_for_label }}">Client Name *</label>
+                {{ form.client }}
+                {% if form.client.errors %}
+                <div class="error">{{ form.client.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.location.id_for_label }}">Location *</label>
+                {{ form.location }}
+                {% if form.location.errors %}
+                <div class="error">{{ form.location.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.completion_date.id_for_label }}">Completion Date</label>
+                {{ form.completion_date }}
+                {% if form.completion_date.errors %}
+                <div class="error">{{ form.completion_date.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.project_duration.id_for_label }}">Project Duration</label>
+                {{ form.project_duration }}
+                {% if form.project_duration.errors %}
+                <div class="error">{{ form.project_duration.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.budget.id_for_label }}">Budget ($)</label>
+                {{ form.budget }}
+                {% if form.budget.errors %}
+                <div class="error">{{ form.budget.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.size.id_for_label }}">Project Size</label>
+                {{ form.size }}
+                {% if form.size.errors %}
+                <div class="error">{{ form.size.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.status.id_for_label }}">Status</label>
+                {{ form.status }}
+                {% if form.status.errors %}
+                <div class="error">{{ form.status.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.featured_image.id_for_label }}">Featured Image</label>
+            {{ form.featured_image }}
+            {% if form.featured_image.errors %}
+            <div class="error">{{ form.featured_image.errors }}</div>
+            {% endif %}
+            {% if object and object.featured_image %}
+            <div class="current-image">
+                <p>Current Image:</p>
+                <img src="{{ object.featured_image.url }}" alt="Current featured image" style="max-width: 200px; height: auto; border-radius: 8px;">
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Project Description *</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+            <div class="error">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Categories</label>
+            <div class="categories-checkbox">
+                {{ form.categories }}
+            </div>
+            {% if form.categories.errors %}
+            <div class="error">{{ form.categories.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.meta_title.id_for_label }}">Meta Title (SEO)</label>
+                {{ form.meta_title }}
+                {% if form.meta_title.errors %}
+                <div class="error">{{ form.meta_title.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.meta_description.id_for_label }}">Meta Description (SEO)</label>
+            {{ form.meta_description }}
+            {% if form.meta_description.errors %}
+            <div class="error">{{ form.meta_description.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-check">
+            {{ form.is_featured }}
+            <label for="{{ form.is_featured.id_for_label }}">Feature this project</label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> {% if object %}Update Project{% else %}Create Project{% endif %}
+            </button>
+            <a href="{% url 'projects:project_dashboard' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+
+    {% if object %}
+    <!-- Project Media Management -->
+    <div class="project-media-section" style="margin-top: 40px;">
+        <h2>Project Media</h2>
+        
+        <!-- Images -->
+        <div class="media-subsection">
+            <h3>Images</h3>
+            <a href="{% url 'projects:project_image_create' object.pk %}" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus"></i> Add Image
+            </a>
+            
+            {% if object.images.all %}
+            <div class="media-grid">
+                {% for image in object.images.all %}
+                <div class="media-item">
+                    <img src="{{ image.image.url }}" alt="{{ image.caption }}">
+                    <div class="media-info">
+                        <p>{{ image.caption|default:"No caption" }}</p>
+                        {% if image.is_primary %}
+                        <span class="badge badge-primary">Primary</span>
+                        {% endif %}
+                    </div>
+                    <div class="media-actions">
+                        <a href="{% url 'projects:project_image_delete' image.pk %}" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>No images added yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Videos -->
+        <div class="media-subsection">
+            <h3>Videos</h3>
+            <a href="{% url 'projects:project_video_create' object.pk %}" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus"></i> Add Video
+            </a>
+            
+            {% if object.videos.all %}
+            <div class="media-grid">
+                {% for video in object.videos.all %}
+                <div class="media-item">
+                    <div class="video-thumb">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="media-info">
+                        <p>{{ video.caption|default:"No caption" }}</p>
+                        <a href="{{ video.video_url }}" target="_blank" class="btn btn-sm btn-secondary">
+                            View Video
+                        </a>
+                    </div>
+                    <div class="media-actions">
+                        <a href="{% url 'projects:project_video_delete' video.pk %}" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>No videos added yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Features -->
+        <div class="media-subsection">
+            <h3>Features</h3>
+            <a href="{% url 'projects:project_feature_create' object.pk %}" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus"></i> Add Feature
+            </a>
+            
+            {% if object.features.all %}
+            <div class="features-list">
+                {% for feature in object.features.all %}
+                <div class="feature-item">
+                    {% if feature.icon %}
+                    <div class="feature-icon">
+                        <i class="{{ feature.icon }}"></i>
+                    </div>
+                    {% endif %}
+                    <div class="feature-content">
+                        <h4>{{ feature.title }}</h4>
+                        <p>{{ feature.description }}</p>
+                    </div>
+                    <div class="feature-actions">
+                        <a href="{% url 'projects:project_feature_delete' feature.pk %}" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>No features added yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Testimonials -->
+        <div class="media-subsection">
+            <h3>Testimonials</h3>
+            <a href="{% url 'projects:project_testimonial_create' object.pk %}" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus"></i> Add Testimonial
+            </a>
+            
+            {% if object.testimonials.all %}
+            <div class="testimonials-list">
+                {% for testimonial in object.testimonials.all %}
+                <div class="testimonial-item">
+                    {% if testimonial.avatar %}
+                    <img src="{{ testimonial.avatar.url }}" alt="{{ testimonial.client_name }}" class="testimonial-avatar">
+                    {% else %}
+                    <div class="avatar-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    {% endif %}
+                    <div class="testimonial-content">
+                        <h4>{{ testimonial.client_name }}</h4>
+                        {% if testimonial.client_position %}
+                        <p class="client-position">{{ testimonial.client_position }}</p>
+                        {% endif %}
+                        <p class="testimonial-text">{{ testimonial.testimonial|truncatewords:20 }}</p>
+                        <div class="rating">
+                            {% for i in "12345" %}
+                            <i class="fas fa-star{% if forloop.counter > testimonial.rating %}-o{% endif %}"></i>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="testimonial-actions">
+                        <a href="{% url 'projects:project_testimonial_delete' testimonial.pk %}" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>No testimonials added yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.project-form {
+    margin-top: 20px;
+}
+
+.categories-checkbox {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.categories-checkbox div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.media-subsection {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.media-subsection h3 {
+    margin-bottom: 15px;
+    color: var(--text-dark);
+}
+
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.media-item {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.media-item img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.video-thumb {
+    width: 100%;
+    height: 120px;
+    background: #e9ecef;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.media-info {
+    margin-bottom: 10px;
+}
+
+.media-actions {
+    text-align: center;
+}
+
+.features-list {
+    display: grid;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.feature-item {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.feature-content {
+    flex: 1;
+}
+
+.feature-content h4 {
+    margin-bottom: 5px;
+    color: var(--text-dark);
+}
+
+.feature-content p {
+    color: var(--text-light);
+    margin: 0;
+}
+
+.testimonials-list {
+    display: grid;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.testimonial-item {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.avatar-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    flex-shrink: 0;
+}
+
+.testimonial-content {
+    flex: 1;
+}
+
+.testimonial-content h4 {
+    margin-bottom: 5px;
+    color: var(--text-dark);
+}
+
+.client-position {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.testimonial-text {
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.rating {
+    color: #f39c12;
+}
+
+.error {
+    color: var(--danger);
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+@media (max-width: 768px) {
+    .media-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .feature-item,
+    .testimonial-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .categories-checkbox {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

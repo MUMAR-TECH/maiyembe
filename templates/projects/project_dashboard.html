@@ -1,0 +1,332 @@
+<!-- templates/projects/project_dashboard.html -->
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard_content %}
+<div class="dashboard-header">
+    <h1>Projects Management</h1>
+    <div class="header-actions">
+        <a href="{% url 'projects:project_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Project
+        </a>
+        <a href="{% url 'projects:project_category_create' %}" class="btn btn-secondary">
+            <i class="fas fa-folder-plus"></i> Add Category
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="fas fa-project-diagram"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ total_projects }}</h3>
+            <p>Total Projects</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-star"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ featured_projects }}</h3>
+            <p>Featured Projects</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-folder"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ categories.count }}</h3>
+            <p>Categories</p>
+        </div>
+    </div>
+</div>
+
+<!-- Projects List -->
+<div class="projects-section">
+    <h2 style="margin-bottom: 20px;">All Projects</h2>
+    
+    {% if projects %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Client</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Categories</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr>
+                    <td>
+                        <div class="project-info">
+                            {% if project.featured_image %}
+                            <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="project-thumb">
+                            {% endif %}
+                            <div>
+                                <strong>{{ project.title }}</strong>
+                                {% if project.is_featured %}
+                                <span class="badge badge-primary">Featured</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ project.client }}</td>
+                    <td>{{ project.location }}</td>
+                    <td>
+                        <span class="badge {% if project.status == 'completed' %}badge-success{% elif project.status == 'ongoing' %}badge-warning{% else %}badge-info{% endif %}">
+                            {{ project.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% for category in project.categories.all|slice:":2" %}
+                        <span class="category-tag">{{ category.name }}</span>
+                        {% endfor %}
+                    </td>
+                    <td>{{ project.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{% url 'projects:project_update' project.pk %}" class="btn btn-sm btn-edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'projects:project_detail' project.slug %}" class="btn btn-sm btn-secondary" target="_blank">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'projects:project_delete' project.pk %}" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="page-btn">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <span class="page-btn active">{{ num }}</span>
+        {% else %}
+        <a href="?page={{ num }}" class="page-btn">{{ num }}</a>
+        {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="page-btn">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="no-projects" style="text-align: center; padding: 40px; background: white; border-radius: 12px;">
+        <p style="margin-bottom: 20px; color: var(--text-light);">No projects found.</p>
+        <a href="{% url 'projects:project_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create Your First Project
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Categories Section -->
+<div class="categories-section" style="margin-top: 40px;">
+    <h2 style="margin-bottom: 20px;">Project Categories</h2>
+    
+    {% if categories %}
+    <div class="categories-grid">
+        {% for category in categories %}
+        <div class="category-card">
+            <div class="category-header">
+                {% if category.image %}
+                <img src="{{ category.image.url }}" alt="{{ category.name }}" class="category-image">
+                {% else %}
+                <div class="category-placeholder">
+                    <i class="fas fa-folder"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div class="category-content">
+                <h3>{{ category.name }}</h3>
+                {% if category.description %}
+                <p>{{ category.description|truncatewords:20 }}</p>
+                {% endif %}
+                <div class="category-stats">
+                    <span>{{ category.projects.count }} projects</span>
+                </div>
+            </div>
+            <div class="category-actions">
+                <a href="{% url 'projects:project_category_update' category.pk %}" class="btn btn-sm btn-edit">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'projects:project_category_delete' category.pk %}" class="btn btn-sm btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-categories" style="text-align: center; padding: 40px; background: white; border-radius: 12px;">
+        <p style="margin-bottom: 20px; color: var(--text-light);">No categories found.</p>
+        <a href="{% url 'projects:project_category_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create Category
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+/* Table Styles */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.data-table th,
+.data-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.data-table tr:hover {
+    background: #f8f9fa;
+}
+
+.project-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.project-thumb {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.category-tag {
+    background: #e9ecef;
+    color: var(--text-dark);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin-right: 5px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+/* Categories Grid */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.category-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.category-header {
+    height: 120px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.category-placeholder {
+    font-size: 2rem;
+    color: #adb5bd;
+}
+
+.category-content {
+    padding: 20px;
+}
+
+.category-content h3 {
+    margin-bottom: 10px;
+    color: var(--text-dark);
+}
+
+.category-content p {
+    color: var(--text-light);
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.category-stats {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.category-actions {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .data-table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .header-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+</style>
+{% endblock %}

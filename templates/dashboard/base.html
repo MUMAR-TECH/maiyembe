@@ -506,12 +506,17 @@
                 <h3>MAIYEMBE DASHBOARD</h3>
                 <p>Welcome, {{ request.user.get_full_name|default:request.user.username }}</p>
             </div>
+
             <nav class="sidebar-nav">
                 <a href="{% url 'core:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
                 <a href="{% url 'core:service_create' %}" class="{% if request.resolver_match.url_name == 'service_create' %}active{% endif %}">
                     <i class="fas fa-plus-circle"></i> Add Service
+                </a>
+                <!-- Add Projects Link -->
+                <a href="{% url 'projects:project_dashboard' %}" class="{% if 'projects' in request.path %}active{% endif %}">
+                    <i class="fas fa-project-diagram"></i> Manage Projects
                 </a>
                 <a href="{% url 'core:service_list' %}" target="_blank">
                     <i class="fas fa-eye"></i> View Live Site

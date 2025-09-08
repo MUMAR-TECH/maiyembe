@@ -78,12 +78,25 @@
                 {% if featured_projects %}
                     {% for project in featured_projects %}
                     <div class="gallery-item {% if forloop.counter == 1 or forloop.counter == 4 or forloop.counter == 7 %}landscape{% endif %}">
-                        <img src="{{ project.featured_image.url }}" alt="{{ project.title }}">
+                        <a href="{% url 'projects:project_detail' project.slug %}" class="gallery-link">
+                            <img src="{{ project.featured_image.url }}" alt="{{ project.title }}">
+                            <div class="gallery-overlay">
+                                <div class="gallery-content">
+                                    <h3>{{ project.title }}</h3>
+                                    <p>{{ project.location }}</p>
+                                    <span class="view-project-btn">View Project</span>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                     {% endfor %}
                 {% else %}
                     <p>No projects available at the moment.</p>
                 {% endif %}
+            </div>
+            <!-- Add View All Projects button -->
+            <div class="view-more-btn" style="margin-top: 40px;">
+                <a href="{% url 'projects:project_list' %}" class="btn">VIEW ALL PROJECTS</a>
             </div>
         </div>
     </section>
@@ -524,4 +537,110 @@
         margin: 0 auto;
     }
 }
+
+
+
+
+
+
+
+
+
+/* Add to the CSS section in home.html */
+.gallery-link {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.9) 0%, rgba(192, 57, 43, 0.9) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    padding: 20px;
+    text-align: center;
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-content {
+    color: white;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover .gallery-content {
+    transform: translateY(0);
+}
+
+.gallery-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.gallery-content p {
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    opacity: 0.9;
+}
+
+.view-project-btn {
+    background: white;
+    color: #e74c3c;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.gallery-link:hover .view-project-btn {
+    background: #2c3e50;
+    color: white;
+}
+
+/* Ensure images are properly sized */
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.gallery-link:hover img {
+    transform: scale(1.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .gallery-content h3 {
+        font-size: 1rem;
+    }
+    
+    .gallery-content p {
+        font-size: 0.8rem;
+    }
+    
+    .view-project-btn {
+        padding: 6px 12px;
+        font-size: 0.7rem;
+    }
+}
+
 </style>

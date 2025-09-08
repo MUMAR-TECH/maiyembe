@@ -206,12 +206,10 @@ def user_login(request):
                     return redirect('accounts:complete_profile')
 
                 # Redirect based on user role
-                if user.role == 'host':
-                    return redirect('crowdfunding:host_dashboard')
-                elif user.role == 'guest':
-                    return redirect('crowdfunding:user_dashboard')
+                if user.role == 'guest':
+                    return redirect('core:dashboard')
                 else:
-                    return redirect('crowdfunding:home')
+                    return redirect('core:home')
 
             else:
                 messages.error(request, 'Invalid email or password.')

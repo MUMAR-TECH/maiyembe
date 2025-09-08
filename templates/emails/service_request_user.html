@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #f4f4f4; padding: 10px 20px; border-radius: 5px; text-align: center; }
+        .content { margin: 20px 0; }
+        .thank-you { font-size: 1.2em; margin-bottom: 20px; }
+        .next-steps { background: #f9f9f9; padding: 15px; border-radius: 5px; }
+        .contact-info { margin-top: 30px; }
+        .footer { margin-top: 30px; font-size: 0.9em; color: #777; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Thank You for Your Interest</h2>
+        </div>
+        
+        <div class="content">
+            <div class="thank-you">
+                <p>Dear {{ service_request.name }},</p>
+                <p>Thank you for your interest in our <strong>{{ service_request.service.title|default:"services" }}</strong>. We have received your request and our team will contact you shortly.</p>
+            </div>
+            
+            <div class="next-steps">
+                <h3>What Happens Next?</h3>
+                <ol>
+                    <li>Our specialist will review your request</li>
+                    <li>We'll contact you via your preferred method within 24 hours</li>
+                    <li>We'll discuss your project requirements in detail</li>
+                    <li>You'll receive a customized proposal</li>
+                </ol>
+            </div>
+            
+            <div class="contact-info">
+                <h3>Need Immediate Assistance?</h3>
+                <p>Phone: +260 779 838 119</p>
+                <p>Email: info@maiyembe.com</p>
+                <p>WhatsApp: <a href="https://wa.me/260779838119">+260 779 838 119</a></p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated email from {{ site_name }}. Please do not reply to this message.</p>
+        </div>
+    </div>
+</body>
+</html>
