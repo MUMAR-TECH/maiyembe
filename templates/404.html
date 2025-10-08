@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .not-found-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(1200px 600px at 50% -10%, rgba(193,154,107,0.15), transparent 60%),
+                linear-gradient(180deg, #0f0f0f 0%, #1a1a1a 100%);
+    color: #fff;
+    padding: 120px 20px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .floating-shape {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle at 30% 30%, rgba(193,154,107,0.35), rgba(193,154,107,0) 60%);
+    filter: blur(30px);
+    animation: float 12s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .floating-shape.two { left: -150px; bottom: -120px; animation-delay: -4s; }
+  .floating-shape.one { right: -180px; top: -160px; animation-delay: -2s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0) scale(1); }
+    50% { transform: translateY(-25px) translateX(10px) scale(1.05); }
+  }
+
+  .not-found-card {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 900px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    backdrop-filter: blur(10px);
+    padding: 50px 30px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .scanline {
+    position: absolute;
+    left: 0;
+    top: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 0%, rgba(193,154,107,0.08) 50%, transparent 100%);
+    animation: scan 6s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+
+  .status {
+    display: inline-block;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: #c19a6b;
+    background: rgba(193,154,107,0.1);
+    border: 1px solid rgba(193,154,107,0.3);
+    padding: 8px 16px;
+    border-radius: 999px;
+    margin-bottom: 18px;
+  }
+
+  .glitch {
+    font-size: 9rem;
+    font-weight: 900;
+    letter-spacing: -3px;
+    line-height: 1;
+    position: relative;
+    display: inline-block;
+    color: #fff;
+    text-shadow: 0 0 24px rgba(193,154,107,0.25);
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  .glitch:before, .glitch:after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+  }
+
+  .glitch:before {
+    left: 2px; text-shadow: -2px 0 rgba(231,76,60,0.6);
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 55%);
+    animation: glitch-top 2.2s infinite linear alternate-reverse;
+  }
+
+  .glitch:after {
+    left: -2px; text-shadow: 2px 0 rgba(41,128,185,0.6);
+    clip-path: polygon(0 65%, 100% 55%, 100% 100%, 0 100%);
+    animation: glitch-bottom 2.2s infinite linear alternate-reverse;
+  }
+
+  @keyframes glitch-top {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-2px, -1px); }
+    40% { transform: translate(3px, 2px); }
+    60% { transform: translate(-1px, 1px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0, 0); }
+  }
+
+  @keyframes glitch-bottom {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(2px, 1px); }
+    40% { transform: translate(-3px, -2px); }
+    60% { transform: translate(1px, -1px); }
+    80% { transform: translate(-2px, 2px); }
+    100% { transform: translate(0, 0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
+
+  .lead {
+    font-size: 1.2rem;
+    color: #d8d8d8;
+    max-width: 720px;
+    margin: 18px auto 30px;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #c19a6b, #a5825a);
+    color: #fff;
+    padding: 14px 26px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: .5px;
+    transition: transform .2s ease, box-shadow .2s ease;
+    border: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(193,154,107,.35) }
+
+  .btn-ghost {
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    padding: 14px 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: .5px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .hint {
+    margin-top: 26px;
+    font-size: 0.95rem;
+    color: #bcbcbc;
+  }
+
+  .search {
+    margin-top: 22px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .search input {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 10px;
+    min-width: 260px;
+    outline: none;
+  }
+
+  .search button {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  @media (max-width: 576px) {
+    .glitch { font-size: 5.5rem; }
+    .not-found-card { padding: 40px 22px; }
+  }
+</style>
+
+<div class="not-found-wrapper">
+  <div class="floating-shape one"></div>
+  <div class="floating-shape two"></div>
+
+  <div class="not-found-card" role="alert" aria-live="polite">
+    <div class="scanline"></div>
+    <span class="status">ERROR 404 · PAGE NOT FOUND</span>
+    <div class="glitch" data-text="404" aria-hidden="true">404</div>
+    <p class="lead">We couldn't find the page "{{ request_path }}". It may have been moved, renamed, or doesn't exist. Let's get you back on track.</p>
+
+    <div class="actions">
+      <a href="{% url 'core:home' %}" class="btn-primary"><i class="fas fa-home"></i> Go Home</a>
+      <a href="{% url 'core:service_list' %}" class="btn-ghost"><i class="fas fa-hammer"></i> Explore Services</a>
+    </div>
+
+    <p class="hint">Tip: Check the URL for typos or use the links above.</p>
+
+    <form class="search" action="https://www.google.com/search" method="get" role="search">
+      <input type="hidden" name="q" value="site:{{ request.get_host }}" />
+      <input aria-label="Search site" type="text" name="q" placeholder="Search our site..." />
+      <button type="submit"><i class="fas fa-search"></i> Search</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+

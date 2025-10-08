@@ -315,3 +315,12 @@ class ServiceFeatureDeleteView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'Feature deleted successfully!')
         return super().delete(request, *args, **kwargs)
+
+
+# Custom error handlers
+def custom_404_view(request, exception):
+    """Render a friendly animated 404 page."""
+    context = {
+        'request_path': request.path,
+    }
+    return render(request, '404.html', context=context, status=404)
