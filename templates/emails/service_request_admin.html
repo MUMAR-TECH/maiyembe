@@ -1,64 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #f4f4f4; padding: 10px 20px; border-radius: 5px; }
-        .content { margin: 20px 0; }
-        .detail-item { margin-bottom: 10px; }
-        .label { font-weight: bold; }
-        .footer { margin-top: 30px; font-size: 0.9em; color: #777; }
+        .header { background: #c19a6b; color: white; padding: 20px; text-align: center; }
+        .content { background: #f9f9f9; padding: 20px; }
+        .footer { background: #333; color: white; padding: 10px; text-align: center; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h2>New Service Request Received</h2>
+            <h1>New Service Request</h1>
         </div>
-        
         <div class="content">
-            <p>A new service request has been submitted through the website:</p>
-            
-            <div class="detail-item">
-                <span class="label">Service:</span>
-                <span>{{ service_request.service.title|default:"General Inquiry" }}</span>
-            </div>
-            
-            <div class="detail-item">
-                <span class="label">From:</span>
-                <span>{{ service_request.name }}</span>
-            </div>
-            
-            <div class="detail-item">
-                <span class="label">Email:</span>
-                <span>{{ service_request.email }}</span>
-            </div>
-            
-            <div class="detail-item">
-                <span class="label">Phone:</span>
-                <span>{{ service_request.phone }}</span>
-            </div>
-            
-            <div class="detail-item">
-                <span class="label">Preferred Contact Method:</span>
-                <span>{{ service_request.get_contact_method_display }}</span>
-            </div>
-            
-            <div class="detail-item">
-                <span class="label">Message:</span>
-                <p>{{ service_request.message }}</p>
-            </div>
-            
-            <div class="detail-item">
-                <span class="label">Submitted:</span>
-                <span>{{ service_request.created_at }}</span>
-            </div>
+            <h2>Service Request Details</h2>
+            <p><strong>Service:</strong> {{ service_request.service.title|default:"General Inquiry" }}</p>
+            <p><strong>Name:</strong> {{ service_request.name }}</p>
+            <p><strong>Email:</strong> {{ service_request.email }}</p>
+            <p><strong>Phone:</strong> {{ service_request.phone }}</p>
+            <p><strong>Budget:</strong> {{ service_request.get_budget_display }}</p>
+            <p><strong>Location:</strong> {{ service_request.project_location|default:"Not specified" }}</p>
+            <p><strong>Timeline:</strong> {{ service_request.project_timeline|default:"Not specified" }}</p>
+            <p><strong>Message:</strong></p>
+            <p>{{ service_request.message }}</p>
         </div>
-        
         <div class="footer">
-            <p>This is an automated notification from {{ site_name }}.</p>
+            <p>Maiyembe Architects & Builders</p>
         </div>
     </div>
 </body>

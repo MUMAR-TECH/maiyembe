@@ -1,29 +1,190 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    .request-success {
+        padding: 4rem 0;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+    }
+    
+    .success-content {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 4rem 3rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    }
+    
+    .success-icon {
+        font-size: 5rem;
+        color: #27ae60;
+        margin-bottom: 2rem;
+        animation: bounce 1s ease-in-out;
+    }
+    
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+        40% {transform: translateY(-30px);}
+        60% {transform: translateY(-15px);}
+    }
+    
+    .request-success h1 {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-weight: 800;
+    }
+    
+    .request-success p {
+        font-size: 1.2rem;
+        color: #7f8c8d;
+        margin-bottom: 3rem;
+        line-height: 1.6;
+    }
+    
+    .next-steps {
+        background: #f8f9fa;
+        padding: 2.5rem;
+        border-radius: 15px;
+        margin: 3rem 0;
+        text-align: left;
+    }
+    
+    .next-steps h3 {
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+        text-align: center;
+        font-size: 1.5rem;
+    }
+    
+    .next-steps ol {
+        padding-left: 1.5rem;
+    }
+    
+    .next-steps li {
+        margin-bottom: 1rem;
+        color: #555;
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+    
+    .contact-options {
+        margin: 3rem 0;
+    }
+    
+    .contact-options h3 {
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+    }
+    
+    .contact-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+    }
+    
+    .btn-whatsapp {
+        background: #25D366;
+        color: white;
+        box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+    }
+    
+    .btn-whatsapp:hover {
+        background: #128C7E;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-3px);
+        color: white;
+    }
+    
+    .back-to-services {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    @media (max-width: 768px) {
+        .success-content {
+            padding: 3rem 2rem;
+            margin: 1rem;
+        }
+        
+        .request-success h1 {
+            font-size: 2rem;
+        }
+        
+        .contact-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .next-steps {
+            padding: 2rem 1.5rem;
+        }
+    }
+</style>
+
 <section class="request-success">
     <div class="container">
         <div class="success-content">
             <div class="success-icon">
                 <i class="fas fa-check-circle"></i>
             </div>
-            <h1>THANK YOU FOR YOUR REQUEST!</h1>
-            <p>We've received your service request and our team will contact you shortly.</p>
+            <h1>THANK YOU FOR YOUR QUOTE REQUEST!</h1>
+            <p>We've received your service request and our team is already working on your personalized quote.</p>
             
             <div class="next-steps">
                 <h3>What Happens Next?</h3>
                 <ol>
-                    <li>Our specialist will review your request</li>
-                    <li>We'll contact you via your preferred method</li>
-                    <li>We'll discuss your project requirements</li>
-                    <li>You'll receive a customized proposal</li>
+                    <li><strong>Immediate Review:</strong> Our specialist will review your project requirements and budget</li>
+                    <li><strong>Personalized Quote:</strong> We'll prepare a detailed quote based on your specific needs</li>
+                    <li><strong>Quick Contact:</strong> We'll contact you within 24 hours via your preferred method</li>
+                    <li><strong>Detailed Discussion:</strong> We'll discuss your project requirements and answer all questions</li>
+                    <li><strong>Final Proposal:</strong> You'll receive a comprehensive proposal with timeline and costs</li>
                 </ol>
             </div>
             
             <div class="contact-options">
-                <h3>Need immediate assistance?</h3>
+                <h3>Need Immediate Assistance?</h3>
+                <p style="color: #7f8c8d; margin-bottom: 1rem;">Contact us directly for urgent inquiries</p>
                 <div class="contact-buttons">
-                    <a href="tel:+260963632816" class="btn">
+                    <a href="tel:+260963632816" class="btn" style="background: #3498db; color: white;">
                         <i class="fas fa-phone"></i> CALL US NOW
                     </a>
                     <a href="https://wa.me/260977294954" class="btn btn-whatsapp" target="_blank">

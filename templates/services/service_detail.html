@@ -12,61 +12,165 @@
     .service-header {
         text-align: center;
         margin-bottom: 3rem;
-        padding: 2rem 0;
+        padding: 3rem 0;
         background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
         color: white;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
     
     .service-header h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
+        font-size: 2.8rem;
+        font-weight: 800;
         margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
     
     .service-category {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         opacity: 0.9;
         font-weight: 300;
+        margin-bottom: 1rem;
     }
     
     .service-content {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 3rem;
+        gap: 4rem;
         margin-bottom: 4rem;
     }
     
     .service-image {
-        border-radius: 10px;
+        border-radius: 15px;
         overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
         height: fit-content;
     }
     
     .service-image img {
         width: 100%;
         height: auto;
-        transition: transform 0.3s ease;
+        transition: transform 0.5s ease;
     }
     
     .service-image:hover img {
-        transform: scale(1.03);
+        transform: scale(1.05);
     }
     
     .service-description h2 {
         color: #2c3e50;
         margin-bottom: 1.5rem;
         padding-bottom: 0.5rem;
-        border-bottom: 2px solid #3498db;
-        font-weight: 600;
+        border-bottom: 3px solid #3498db;
+        font-weight: 700;
+        font-size: 1.8rem;
     }
     
     .service-description p {
         line-height: 1.8;
         color: #555;
         margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+    
+    /* Pricing Section */
+    .pricing-section {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin: 3rem 0;
+        border-left: 5px solid #3498db;
+    }
+    
+    .pricing-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .price-main {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+    
+    .price-unit {
+        font-size: 1.1rem;
+        color: #7f8c8d;
+        margin-bottom: 1rem;
+    }
+    
+    .price-description {
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .pricing-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .pricing-column h4 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .pricing-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .pricing-list li {
+        padding: 0.8rem 0;
+        border-bottom: 1px solid #ecf0f1;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .pricing-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .pricing-list li i {
+        color: #27ae60;
+        font-size: 0.9rem;
+    }
+    
+    .negotiable-badge {
+        background: #e74c3c;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .duration-info {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-weight: 600;
+        color: #2c3e50;
     }
     
     .features-grid {
@@ -80,101 +184,146 @@
         display: flex;
         align-items: flex-start;
         background: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        padding: 1.8rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-left: 4px solid #3498db;
     }
     
     .feature-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
     }
     
     .feature-icon {
-        background: #3498db;
+        background: linear-gradient(135deg, #3498db, #2980b9);
         color: white;
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-right: 1.5rem;
         flex-shrink: 0;
-        font-size: 1.2rem;
+        font-size: 1.4rem;
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
     }
     
     .feature-content h4 {
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.8rem;
         color: #2c3e50;
-        font-weight: 600;
+        font-weight: 700;
+        font-size: 1.2rem;
     }
     
     .feature-content p {
         margin-bottom: 0;
         color: #7f8c8d;
+        line-height: 1.6;
     }
     
     .service-cta {
         text-align: center;
-        margin: 3rem 0;
+        margin: 4rem 0;
+        padding: 3rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        color: white;
+    }
+    
+    .service-cta h3 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+    
+    .service-cta p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
     }
     
     .btn-whatsapp {
         background: #25D366;
         color: white;
+        padding: 1.2rem 2.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        text-decoration: none;
+    }
+    
+    .btn-whatsapp:hover {
+        background: #128C7E;
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(37, 211, 102, 0.5);
+        color: white;
+    }
+    
+    .btn-outline {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
         padding: 1rem 2rem;
         border-radius: 50px;
         font-weight: 600;
         font-size: 1.1rem;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.8rem;
+        text-decoration: none;
+        margin-left: 1rem;
     }
     
-    .btn-whatsapp:hover {
-        background: #128C7E;
+    .btn-outline:hover {
+        background: white;
+        color: #667eea;
         transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
-        color: white;
     }
     
     .service-request-form {
         background: white;
         padding: 3rem;
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.1);
         margin: 4rem 0;
     }
     
     .service-request-form h2 {
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
         color: #2c3e50;
-        font-weight: 600;
+        font-weight: 700;
         padding-bottom: 1rem;
-        border-bottom: 2px solid #f1f1f1;
+        border-bottom: 3px solid #f1f1f1;
+        font-size: 2rem;
     }
     
     .form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.8rem;
     }
     
     .form-group label {
         display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
+        margin-bottom: 0.8rem;
+        font-weight: 700;
         color: #2c3e50;
+        font-size: 1.1rem;
     }
     
     .form-control {
         width: 100%;
-        padding: 0.75rem 1rem;
-        border: 1px solid #ddd;
-        border-radius: 5px;
+        padding: 1rem 1.2rem;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
         font-size: 1rem;
         transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
@@ -182,38 +331,49 @@
     .form-control:focus {
         outline: none;
         border-color: #3498db;
-        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
     }
     
     textarea.form-control {
-        min-height: 120px;
+        min-height: 150px;
         resize: vertical;
     }
     
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    
     .btn-primary {
-        background: #3498db;
+        background: linear-gradient(135deg, #3498db, #2980b9);
         color: white;
         border: none;
-        padding: 0.75rem 2rem;
-        border-radius: 5px;
-        font-weight: 600;
-        font-size: 1rem;
+        padding: 1.2rem 2.5rem;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1.1rem;
         cursor: pointer;
         transition: all 0.3s ease;
         width: 100%;
         margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
     }
     
     .btn-primary:hover {
-        background: #2980b9;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        background: linear-gradient(135deg, #2980b9, #2471a3);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
     }
     
     .error-message {
         color: #e74c3c;
-        font-size: 0.875rem;
+        font-size: 0.9rem;
         margin-top: 0.5rem;
+        font-weight: 600;
     }
     
     #form-messages {
@@ -221,36 +381,38 @@
     }
     
     .alert {
-        padding: 1rem;
-        border-radius: 5px;
-        margin-bottom: 1rem;
+        padding: 1.2rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
     }
     
     .alert-success {
         background-color: #d4edda;
         color: #155724;
-        border: 1px solid #c3e6cb;
+        border: 2px solid #c3e6cb;
     }
     
     .alert-danger {
         background-color: #f8d7da;
         color: #721c24;
-        border: 1px solid #f5c6cb;
+        border: 2px solid #f5c6cb;
     }
     
     /* Related Services */
     .related-services {
-        padding: 4rem 0;
-        background: #f8f9fa;
+        padding: 5rem 0;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     }
     
     .section-title {
         text-align: center;
         margin-bottom: 3rem;
         color: #2c3e50;
-        font-weight: 700;
+        font-weight: 800;
         position: relative;
         padding-bottom: 1rem;
+        font-size: 2.5rem;
     }
     
     .section-title:after {
@@ -259,32 +421,33 @@
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 80px;
-        height: 3px;
+        width: 100px;
+        height: 4px;
         background: #3498db;
+        border-radius: 2px;
     }
     
     .services-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 2rem;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2.5rem;
     }
     
     .service-card {
         background: white;
-        border-radius: 10px;
+        border-radius: 15px;
         overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     
     .service-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        transform: translateY(-12px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     }
     
     .service-card .service-image {
-        height: 200px;
+        height: 220px;
         overflow: hidden;
     }
     
@@ -300,16 +463,17 @@
     }
     
     .service-card .service-content {
-        padding: 1.5rem;
+        padding: 2rem;
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 1.2rem;
     }
     
     .service-card h3 {
         color: #2c3e50;
-        font-weight: 600;
+        font-weight: 700;
         margin: 0;
+        font-size: 1.4rem;
     }
     
     .service-card p {
@@ -318,28 +482,43 @@
         margin: 0;
     }
     
+    .service-price {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #3498db;
+        margin: 0.5rem 0;
+    }
+    
     .read-more {
         color: #3498db;
-        font-weight: 600;
+        font-weight: 700;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.8rem;
         transition: color 0.3s ease;
+        font-size: 1rem;
     }
     
     .read-more:hover {
         color: #2980b9;
+        gap: 1rem;
     }
     
     /* Responsive Design */
-    @media (max-width: 992px) {
+    @media (max-width: 1200px) {
         .service-content {
             grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+        
+        .pricing-details {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
         }
         
         .service-header h1 {
-            font-size: 2rem;
+            font-size: 2.3rem;
         }
     }
     
@@ -351,11 +530,65 @@
         .feature-item {
             flex-direction: column;
             text-align: center;
+            padding: 1.5rem;
         }
         
         .feature-icon {
             margin-right: 0;
             margin-bottom: 1rem;
+        }
+        
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .service-cta {
+            padding: 2rem;
+        }
+        
+        .btn-outline {
+            margin-left: 0;
+            margin-top: 1rem;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .pricing-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .service-header {
+            padding: 2rem 1rem;
+        }
+        
+        .service-header h1 {
+            font-size: 2rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .service-request-form {
+            padding: 1.5rem;
+        }
+        
+        .service-cta h3 {
+            font-size: 1.5rem;
+        }
+        
+        .service-cta p {
+            font-size: 1rem;
+        }
+        
+        .btn-whatsapp, .btn-outline {
+            width: 100%;
+            justify-content: center;
+            margin: 0.5rem 0;
+        }
+        
+        .section-title {
+            font-size: 2rem;
         }
     }
 </style>
@@ -365,6 +598,12 @@
         <div class="service-header">
             <h1>{{ service.title|upper }}</h1>
             <p class="service-category">{{ service.get_category_display }}</p>
+            {% if service.starting_price %}
+            <div class="price-main">{{ service.get_price_display }}</div>
+            {% if service.price_unit %}
+            <div class="price-unit">{{ service.price_unit }}</div>
+            {% endif %}
+            {% endif %}
         </div>
         
         <div class="service-content">
@@ -376,13 +615,150 @@
                 <h2>Service Overview</h2>
                 {{ service.full_description|linebreaks }}
                 
+                <!-- Pricing Information -->
+                {% if service.starting_price or service.price_description %}
+                <div class="pricing-section">
+                    <div class="pricing-header">
+                        <div>
+                            <h3 style="color: #2c3e50; margin-bottom: 1rem; font-weight: 700;">Service Pricing</h3>
+                            {% if service.starting_price %}
+                            <div class="price-main">{{ service.get_price_display }}</div>
+                            {% if service.price_unit %}
+                            <div class="price-unit">{{ service.price_unit }}</div>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                        {% if service.is_price_negotiable %}
+                        <div class="negotiable-badge">
+                            <i class="fas fa-handshake"></i> Price Negotiable
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if service.price_description %}
+                    <div class="price-description">
+                        {{ service.price_description|linebreaks }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if service.estimated_duration %}
+                    <div class="duration-info">
+                        <i class="fas fa-clock"></i>
+                        <span>Estimated Duration: {{ service.estimated_duration }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="pricing-details">
+                        {% if service.get_includes_list %}
+                        <div class="pricing-column">
+                            <h4><i class="fas fa-check-circle" style="color: #27ae60;"></i> What's Included</h4>
+                            <ul class="pricing-list">
+                                {% for item in service.get_includes_list %}
+                                <li><i class="fas fa-check"></i> {{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                        
+                        {% if service.get_optional_addons_list %}
+                        <div class="pricing-column">
+                            <h4><i class="fas fa-plus-circle" style="color: #3498db;"></i> Optional Add-ons</h4>
+                            <ul class="pricing-list">
+                                {% for item in service.get_optional_addons_list %}
+                                <li><i class="fas fa-plus"></i> {{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if service.get_pricing_breakdown_list %}
+                    <div style="margin-top: 2rem;">
+                        <h4 style="color: #2c3e50; margin-bottom: 1rem; font-weight: 700;">Detailed Pricing Breakdown</h4>
+                        <ul class="pricing-list">
+                            {% for item in service.get_pricing_breakdown_list %}
+                            <li><i class="fas fa-receipt" style="color: #3498db;"></i> {{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Direct Booking Section for Fixed Price Services -->
+                {% if service.price_display_type == 'fixed' and service.starting_price %}
+                <div class="direct-booking-section" style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; padding: 3rem; border-radius: 15px; margin: 3rem 0; text-align: center;">
+                    <h2 style="color: white; margin-bottom: 1rem; font-weight: 700;">Ready to Book This Service?</h2>
+                    <p style="font-size: 1.3rem; margin-bottom: 2rem; opacity: 0.9;">Book this service directly at the listed price</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;">
+                        <div style="text-align: left;">
+                            <div class="booking-price" style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">
+                                {{ service.get_price_display }}
+                            </div>
+                            {% if service.price_unit %}
+                            <div class="price-unit" style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 1rem;">
+                                {{ service.price_unit }}
+                            </div>
+                            {% endif %}
+                            {% if service.estimated_duration %}
+                            <div class="duration" style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem; font-size: 1.1rem;">
+                                <i class="fas fa-clock"></i>
+                                <span>Estimated: {{ service.estimated_duration }}</span>
+                            </div>
+                            {% endif %}
+                            <div class="guarantee" style="display: flex; align-items: center; gap: 0.8rem; font-size: 1.1rem;">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Quality Guaranteed</span>
+                            </div>
+                        </div>
+                        
+                        <div class="quick-booking-form" style="background: white; padding: 2rem; border-radius: 10px; text-align: left;">
+                            <h4 style="color: #2c3e50; margin-bottom: 1.5rem; text-align: center;">Quick Booking</h4>
+                            <form method="post" action="{% url 'core:book_service_directly' service.id %}" id="directBookingForm">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <input type="text" name="name" class="form-control" placeholder="Your Name" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 1rem;">
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" name="email" class="form-control" placeholder="Your Email" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 1rem;">
+                                </div>
+                                <div class="form-group">
+                                    <input type="tel" name="phone" class="form-control" placeholder="Your Phone" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 1rem;">
+                                </div>
+                                <div class="form-group">
+                                    <select name="contact_method" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 1rem;">
+                                        <option value="whatsapp">WhatsApp</option>
+                                        <option value="phone">Phone Call</option>
+                                        <option value="email">Email</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn" style="background: #27ae60; color: white; width: 100%; padding: 15px; border: none; border-radius: 5px; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease;">
+                                    <i class="fas fa-calendar-check"></i> BOOK NOW
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.3);">
+                        <p style="margin-bottom: 1rem; opacity: 0.9;">Prefer to book via WhatsApp?</p>
+                        <a href="https://wa.me/260977294954?text=I%20want%20to%20book%20your%20{{ service.title|urlencode }}%20service%20at%20{{ service.get_price_display|urlencode }}.%20Please%20confirm%20availability%20and%20next%20steps." 
+                        class="btn" 
+                        style="background: #25D366; color: white; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.8rem;"
+                        target="_blank">
+                        <i class="fab fa-whatsapp"></i> BOOK VIA WHATSAPP
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                
                 {% if service.features.all %}
-                <h3>Key Features</h3>
+                <h2>Key Features & Benefits</h2>
                 <div class="features-grid">
                     {% for feature in service.features.all %}
                     <div class="feature-item">
                         <div class="feature-icon">
-                            <i class="{{ feature.icon|default:'fas fa-check' }}"></i>
+                            <i class="{{ feature.icon|default:'fas fa-star' }}"></i>
                         </div>
                         <div class="feature-content">
                             <h4>{{ feature.title }}</h4>
@@ -398,16 +774,26 @@
         </div>
         
         <div class="service-cta">
-            <a href="https://wa.me/260977294954?text=I'm%20interested%20in%20your%20{{ service.title|urlencode }}%20service.%20Please%20contact%20me%20with%20more%20information." 
-               class="btn btn-whatsapp" 
-               target="_blank">
-               <i class="fab fa-whatsapp"></i> CHAT ON WHATSAPP
-            </a>
+            <h3>Ready to Get Started?</h3>
+            <p>Contact us today for a free consultation and detailed quote</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="https://wa.me/260977294954?text=I'm%20interested%20in%20your%20{{ service.title|urlencode }}%20service.%20Starting%20price:%20{{ service.get_price_display|urlencode }}.%20Please%20contact%20me%20with%20more%20information." 
+                   class="btn-whatsapp" 
+                   target="_blank">
+                   <i class="fab fa-whatsapp"></i> CHAT ON WHATSAPP
+                </a>
+                <a href="tel:+260963632816" class="btn-outline">
+                    <i class="fas fa-phone"></i> CALL NOW
+                </a>
+            </div>
         </div>
         
-        <!-- Service Request Form -->
+        <!-- Enhanced Service Request Form -->
         <div class="service-request-form">
-            <h2>Request This Service</h2>
+            <h2>Request Custom Quote</h2>
+            <p style="text-align: center; color: #7f8c8d; margin-bottom: 2rem; font-size: 1.1rem;">
+                Get a personalized quote tailored to your specific needs and requirements
+            </p>
             
             <div id="form-messages"></div>
             
@@ -415,102 +801,156 @@
                 {% csrf_token %}
                 {{ service_request_form.service }}
                 
-                <div class="form-group">
-                    <label>Your Name *</label>
-                    {{ service_request_form.name }}
-                    <div class="error-message" id="name-error"></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Your Name *</label>
+                        {{ service_request_form.name }}
+                        <div class="error-message" id="name-error"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        {{ service_request_form.email }}
+                        <div class="error-message" id="email-error"></div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        {{ service_request_form.phone }}
+                        <div class="error-message" id="phone-error"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Preferred Contact Method *</label>
+                        {{ service_request_form.contact_method }}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Project Location</label>
+                        {{ service_request_form.project_location }}
+                        <div class="error-message" id="project_location-error"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Project Timeline</label>
+                        {{ service_request_form.project_timeline }}
+                        <div class="error-message" id="project_timeline-error"></div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Budget Range *</label>
+                        {{ service_request_form.budget_range }}
+                        <div class="error-message" id="budget_range-error"></div>
+                    </div>
+                    
+                    <div class="form-group" id="custom-budget-group" style="display: none;">
+                        <label>Specific Budget Amount (ZMW)</label>
+                        {{ service_request_form.custom_budget }}
+                        <div class="error-message" id="custom_budget-error"></div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label>Email Address *</label>
-                    {{ service_request_form.email }}
-                    <div class="error-message" id="email-error"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Phone Number *</label>
-                    {{ service_request_form.phone }}
-                    <div class="error-message" id="phone-error"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Message *</label>
+                    <label>Project Details & Requirements *</label>
                     {{ service_request_form.message }}
                     <div class="error-message" id="message-error"></div>
+                    <small style="color: #7f8c8d; margin-top: 0.5rem; display: block;">
+                        Please provide as much detail as possible about your project requirements, specific needs, and any special considerations.
+                    </small>
                 </div>
                 
-                <div class="form-group">
-                    <label>Preferred Contact Method *</label>
-                    {{ service_request_form.contact_method }}
-                </div>
-                
-                <button type="submit" class="btn btn-primary" id="submit-btn">Submit Request</button>
+                <button type="submit" class="btn-primary" id="submit-btn">
+                    <i class="fas fa-paper-plane"></i> REQUEST CUSTOM QUOTE
+                </button>
             </form>
         </div>
         
         <script>
-        document.getElementById('serviceRequestForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
-            const submitBtn = document.getElementById('submit-btn');
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('serviceRequestForm');
+            const budgetRange = document.getElementById('id_budget_range');
+            const customBudgetGroup = document.getElementById('custom-budget-group');
             
-            // Clear previous errors
-            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-            
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-            
-            fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Show success message
-                    const messageDiv = document.getElementById('form-messages');
-                    messageDiv.innerHTML = `
-                        <div class="alert alert-success">
-                            ${data.message}
-                        </div>
-                    `;
-                    
-                    // Clear form
-                    form.reset();
-                    
-                    // Redirect after 3 seconds
-                    setTimeout(() => {
-                        window.location.href = "{% url 'core:service_request_success' %}";
-                    }, 3000);
+            // Show/hide custom budget field
+            function toggleCustomBudget() {
+                if (budgetRange.value === 'custom') {
+                    customBudgetGroup.style.display = 'block';
                 } else {
-                    // Display errors
-                    if (data.errors) {
-                        for (const field in data.errors) {
-                            const errorElement = document.getElementById(`${field}-error`);
-                            if (errorElement) {
-                                errorElement.textContent = data.errors[field][0].message;
+                    customBudgetGroup.style.display = 'none';
+                }
+            }
+            
+            budgetRange.addEventListener('change', toggleCustomBudget);
+            toggleCustomBudget(); // Initial check
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const submitBtn = document.getElementById('submit-btn');
+                
+                // Clear previous errors
+                document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+                
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting Request...';
+                
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success message
+                        const messageDiv = document.getElementById('form-messages');
+                        messageDiv.innerHTML = `
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i> ${data.message}
+                            </div>
+                        `;
+                        
+                        // Clear form
+                        form.reset();
+                        
+                        // Redirect after 3 seconds
+                        setTimeout(() => {
+                            window.location.href = "{% url 'core:service_request_success' %}";
+                        }, 3000);
+                    } else {
+                        // Display errors
+                        if (data.errors) {
+                            for (const field in data.errors) {
+                                const errorElement = document.getElementById(`${field}-error`);
+                                if (errorElement) {
+                                    errorElement.textContent = data.errors[field][0].message;
+                                }
                             }
                         }
                     }
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const messageDiv = document.getElementById('form-messages');
-                messageDiv.innerHTML = `
-                    <div class="alert alert-danger">
-                        An error occurred. Please try again later.
-                    </div>
-                `;
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Request';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const messageDiv = document.getElementById('form-messages');
+                    messageDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i> An error occurred. Please try again later.
+                        </div>
+                    `;
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> REQUEST CUSTOM QUOTE';
+                });
             });
         });
         </script>
@@ -531,7 +971,12 @@
                 <div class="service-content">
                     <h3>{{ related_service.title|upper }}</h3>
                     <p>{{ related_service.short_description }}</p>
-                    <a href="{% url 'core:service_detail' related_service.slug %}" class="read-more">READ MORE <i class="fas fa-arrow-right"></i></a>
+                    {% if related_service.starting_price %}
+                    <div class="service-price">{{ related_service.get_price_display }}</div>
+                    {% endif %}
+                    <a href="{% url 'core:service_detail' related_service.slug %}" class="read-more">
+                        VIEW DETAILS <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
             </div>
             {% endfor %}

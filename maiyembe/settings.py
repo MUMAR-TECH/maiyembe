@@ -93,6 +93,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 # Custom context processor for global site settings
                 #'core.context_processors.site_settings',
+                'blog.context_processors.blog_context',
             ],
         },
     },

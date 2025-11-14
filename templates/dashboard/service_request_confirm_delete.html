@@ -1,0 +1,40 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard_content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1 style="color: var(--danger);">Confirm Deletion</h1>
+        <a href="{% url 'core:service_request_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Requests
+        </a>
+    </div>
+
+    <div style="text-align: center; padding: 30px 0;">
+        <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--warning); margin-bottom: 20px;"></i>
+        <h2 style="margin-bottom: 20px; color: var(--text-dark);">Delete Service Request?</h2>
+        <p style="font-size: 1.2rem; color: var(--text-light); margin-bottom: 30px;">
+            Request from <strong>{{ object.name }}</strong>
+        </p>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; text-align: left;">
+            <p><strong>Service:</strong> {{ object.service.title|default:"General Inquiry" }}</p>
+            <p><strong>Message:</strong> {{ object.message|truncatewords:20 }}</p>
+            <p><strong>Received:</strong> {{ object.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+        <p style="color: var(--danger); margin-bottom: 30px;">
+            <i class="fas fa-exclamation-circle"></i> This action cannot be undone.
+        </p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-actions" style="justify-content: center;">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Delete Request
+                </button>
+                <a href="{% url 'core:service_request_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -97,6 +97,19 @@
             font-size: 1.1rem;
         }
 
+        .nav-section {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-section-title {
+            padding: 10px 25px;
+            color: #bbb;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
         /* Main Content */
         .dashboard-content {
             flex: 1;
@@ -200,100 +213,7 @@
             font-size: 0.9rem;
         }
 
-        /* Service List */
-        .service-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
-        }
-
-        .service-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .service-image {
-            height: 180px;
-            background: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .service-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .service-card:hover .service-image img {
-            transform: scale(1.05);
-        }
-
-        .no-image {
-            color: #adb5bd;
-            font-size: 3rem;
-        }
-
-        .service-info {
-            padding: 20px;
-        }
-
-        .service-info h3 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: var(--text-dark);
-        }
-
-        .service-category {
-            color: var(--primary-color);
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-        }
-
-        .service-status {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .badge-success { background: var(--success); color: white; }
-        .badge-secondary { background: #6c757d; color: white; }
-        .badge-primary { background: var(--primary-color); color: white; }
-        .badge-warning { background: var(--warning); color: var(--text-dark); }
-
-        .service-meta {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            line-height: 1.5;
-        }
-
-        .service-actions {
-            padding: 15px 20px;
-            background: #f8f9fa;
-            display: flex;
-            gap: 10px;
-            border-top: 1px solid var(--border-color);
-        }
-
+        /* Buttons */
         .btn {
             padding: 8px 16px;
             border-radius: 6px;
@@ -317,98 +237,8 @@
         .btn-secondary:hover { background: #5a6268; }
         .btn-edit { background: var(--info); color: white; }
         .btn-edit:hover { background: #138496; }
-
-        /* Forms */
-        .form-container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .form-header {
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .form-header h1 {
-            font-size: 1.8rem;
-            color: var(--text-dark);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            flex: 1;
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(193, 154, 107, 0.1);
-        }
-
-        textarea.form-control {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .form-check {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .form-check-input {
-            width: 18px;
-            height: 18px;
-        }
-
-        .current-image {
-            margin-top: 10px;
-        }
-
-        .current-image img {
-            max-width: 200px;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #218838; }
 
         /* Messages */
         .dashboard-messages {
@@ -457,15 +287,6 @@
         }
 
         @media (max-width: 768px) {
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-            
-            .service-list {
-                grid-template-columns: 1fr;
-            }
-            
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -483,18 +304,6 @@
             .content-wrapper {
                 padding: 20px 15px;
             }
-            
-            .form-container {
-                padding: 20px;
-            }
-            
-            .form-actions {
-                flex-direction: column;
-            }
-            
-            .service-actions {
-                flex-wrap: wrap;
-            }
         }
     </style>
 </head>
@@ -508,22 +317,71 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="{% url 'core:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-                <a href="{% url 'core:service_create' %}" class="{% if request.resolver_match.url_name == 'service_create' %}active{% endif %}">
-                    <i class="fas fa-plus-circle"></i> Add Service
-                </a>
-                <!-- Add Projects Link -->
-                <a href="{% url 'projects:project_dashboard' %}" class="{% if 'projects' in request.path %}active{% endif %}">
-                    <i class="fas fa-project-diagram"></i> Manage Projects
-                </a>
-                <a href="{% url 'core:service_list' %}" target="_blank">
-                    <i class="fas fa-eye"></i> View Live Site
-                </a>
-                <a href="{% url 'accounts:logout' %}">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="{% url 'core:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Services</div>
+                    <a href="{% url 'core:service_list_dashboard' %}" class="{% if 'services' in request.path and 'requests' not in request.path %}active{% endif %}">
+                        <i class="fas fa-concierge-bell"></i> Manage Services
+                    </a>
+                    <a href="{% url 'core:service_create' %}" class="{% if request.resolver_match.url_name == 'service_create' %}active{% endif %}">
+                        <i class="fas fa-plus-circle"></i> Add Service
+                    </a>
+                    <a href="{% url 'core:service_request_list' %}" class="{% if 'service-requests' in request.path %}active{% endif %}">
+                        <i class="fas fa-list-alt"></i> Service Requests
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Projects</div>
+                    <a href="{% url 'projects:project_dashboard' %}" class="{% if 'projects' in request.path %}active{% endif %}">
+                        <i class="fas fa-project-diagram"></i> Manage Projects
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Blog</div>
+                    <a href="{% url 'blog:blog_dashboard' %}" class="{% if 'blog' in request.path %}active{% endif %}">
+                        <i class="fas fa-blog"></i> Manage Blog
+                    </a>
+                    <a href="{% url 'blog:post_create' %}" class="{% if request.resolver_match.url_name == 'post_create' %}active{% endif %}">
+                        <i class="fas fa-plus-circle"></i> Add Post
+                    </a>
+                    <a href="{% url 'blog:comment_list' %}" class="{% if 'comments' in request.path %}active{% endif %}">
+                        <i class="fas fa-comments"></i> Comments
+                        {% with pending_comments=comment_count %}
+                        {% if comment_count > 0 %}
+                        <span class="badge badge-danger" style="margin-left: auto;">{{ comment_count }}</span>
+                        {% endif %}
+                        {% endwith %}
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Content</div>
+                    <a href="{% url 'core:testimonial_list' %}" class="{% if 'testimonials' in request.path %}active{% endif %}">
+                        <i class="fas fa-comment"></i> Testimonials
+                    </a>
+                    <a href="{% url 'core:team_list' %}" class="{% if 'team' in request.path %}active{% endif %}">
+                        <i class="fas fa-users"></i> Team Members
+                    </a>
+                </div>
+
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Website</div>
+                    <a href="{% url 'core:service_list' %}" target="_blank">
+                        <i class="fas fa-eye"></i> View Live Site
+                    </a>
+                    <a href="{% url 'accounts:logout' %}">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
             </nav>
         </aside>
 
@@ -536,7 +394,7 @@
                 </button>
                 
                 <div class="search-bar">
-                    <input type="text" placeholder="Search services...">
+                    <input type="text" placeholder="Search...">
                 </div>
                 
                 <div class="user-menu">

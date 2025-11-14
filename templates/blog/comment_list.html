@@ -1,0 +1,293 @@
+<!-- templates/blog/comment_list.html -->
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard_content %}
+<div class="dashboard-header">
+    <h1>Comment Management</h1>
+    <a href="{% url 'blog:blog_dashboard' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Blog
+    </a>
+</div>
+
+<!-- Statistics Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="fas fa-comments"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ total_comments }}</h3>
+            <p>Total Comments</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ approved_comments }}</h3>
+            <p>Approved</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ pending_comments }}</h3>
+            <p>Pending</p>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Tabs -->
+<div class="filter-tabs" style="margin-bottom: 20px;">
+    <a href="?status=all" class="tab-btn {% if request.GET.status == 'all' or not request.GET.status %}active{% endif %}">
+        All Comments
+    </a>
+    <a href="?status=approved" class="tab-btn {% if request.GET.status == 'approved' %}active{% endif %}">
+        Approved
+    </a>
+    <a href="?status=pending" class="tab-btn {% if request.GET.status == 'pending' %}active{% endif %}">
+        Pending
+    </a>
+</div>
+
+<!-- Comments List -->
+<div class="comments-section">
+    {% if comments %}
+    <div class="comments-list">
+        {% for comment in comments %}
+        <div class="comment-card {% if not comment.is_approved %}comment-pending{% endif %}">
+            <div class="comment-header">
+                <div class="comment-author">
+                    <strong>{{ comment.user.get_full_name|default:comment.user.username }}</strong>
+                    <span class="comment-date">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+                </div>
+                <div class="comment-status">
+                    <span class="badge {% if comment.is_approved %}badge-success{% else %}badge-warning{% endif %}">
+                        {{ comment.is_approved|yesno:"Approved,Pending" }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="comment-post">
+                <i class="fas fa-newspaper"></i>
+                <a href="{% url 'blog:post_detail' comment.post.slug %}" target="_blank">
+                    {{ comment.post.title }}
+                </a>
+            </div>
+            
+            <div class="comment-content">
+                <p>{{ comment.content }}</p>
+            </div>
+            
+            <div class="comment-actions">
+                {% if not comment.is_approved %}
+                <button class="btn btn-sm btn-success approve-btn" data-comment-id="{{ comment.id }}">
+                    <i class="fas fa-check"></i> Approve
+                </button>
+                {% else %}
+                <button class="btn btn-sm btn-warning unapprove-btn" data-comment-id="{{ comment.id }}">
+                    <i class="fas fa-times"></i> Unapprove
+                </button>
+                {% endif %}
+                
+                <a href="{% url 'blog:comment_update' comment.pk %}" class="btn btn-sm btn-edit">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <a href="{% url 'blog:comment_delete' comment.pk %}" class="btn btn-sm btn-danger">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="page-btn">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <span class="page-btn active">{{ num }}</span>
+        {% else %}
+        <a href="?page={{ num }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="page-btn">{{ num }}</a>
+        {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="page-btn">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="no-comments" style="text-align: center; padding: 40px; background: white; border-radius: 12px;">
+        <p style="margin-bottom: 20px; color: var(--text-light);">No comments found.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.filter-tabs {
+    display: flex;
+    gap: 10px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.tab-btn:hover:not(.active) {
+    background: #f8f9fa;
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.comment-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+.comment-pending {
+    border-left-color: var(--warning);
+    background: #fffbf0;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.comment-author strong {
+    color: var(--text-dark);
+}
+
+.comment-date {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-left: 10px;
+}
+
+.comment-post {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.comment-post a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.comment-post a:hover {
+    text-decoration: underline;
+}
+
+.comment-content {
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .filter-tabs {
+        flex-direction: column;
+    }
+    
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .comment-actions {
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Approve comment
+    document.querySelectorAll('.approve-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const commentId = this.dataset.commentId;
+            fetch(`/blog/dashboard/comments/approve/${commentId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        });
+    });
+
+    // Unapprove comment
+    document.querySelectorAll('.unapprove-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const commentId = this.dataset.commentId;
+            fetch(`/blog/dashboard/comments/unapprove/${commentId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

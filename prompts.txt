@@ -5,3 +5,8 @@ create the project creation features
 create populate the db with at least 5 projects
 
 create the admin section for managing the projects and all the projects related information
+
+
+
+10/11/25
+create a feature where the price of the service will be showing and possibility for the user to automatically generate the price. so add a feature where the admin will be able to configure the prices

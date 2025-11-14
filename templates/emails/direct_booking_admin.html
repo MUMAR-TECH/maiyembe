@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #27ae60; color: white; padding: 20px; text-align: center; }
+        .content { background: #f9f9f9; padding: 20px; }
+        .footer { background: #333; color: white; padding: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>DIRECT BOOKING RECEIVED! 🎉</h1>
+        </div>
+        <div class="content">
+            <h2>Booking Details</h2>
+            <p><strong>Service:</strong> {{ service.title }}</p>
+            <p><strong>Price:</strong> {{ service.get_price_display }}</p>
+            <p><strong>Customer Name:</strong> {{ service_request.name }}</p>
+            <p><strong>Email:</strong> {{ service_request.email }}</p>
+            <p><strong>Phone:</strong> {{ service_request.phone }}</p>
+            <p><strong>Location:</strong> {{ service_request.project_location|default:"Not specified" }}</p>
+            <p><strong>Timeline:</strong> {{ service_request.project_timeline|default:"Not specified" }}</p>
+            <p><strong>Urgent Action Required:</strong> Please contact customer to confirm booking and schedule service.</p>
+        </div>
+        <div class="footer">
+            <p>Maiyembe Architects & Builders</p>
+        </div>
+    </div>
+</body>
+</html>

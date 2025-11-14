@@ -7,18 +7,22 @@ from .models import ServiceFeature, ServiceRequest, TeamMember, Service, SliderI
 from blog.models import Post
 from projects.models import Project
 
-from .forms import ContactForm, ServiceCreateForm, ServiceFeatureForm, ServiceRequestForm, ServiceUpdateForm, SubscriberForm
+from .forms import ContactForm, ServiceCreateForm, ServiceFeatureForm, ServiceRequestForm, ServiceUpdateForm, SubscriberForm, TeamMemberForm, TestimonialForm
 
 
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
+import logging
+logger = logging.getLogger(__name__)
+
 # Email imports
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils import timezone
 
 
 
@@ -33,7 +37,7 @@ class HomePageView(TemplateView):
         context['about'] = About.objects.first()
         context['services'] = Service.objects.all()[:6]  # Limit to 6 services
         context['featured_projects'] = Project.objects.filter(is_featured=True)[:8]  # Limit to 8 projects
-        context['recent_posts'] = Post.objects.filter(is_published=True)[:5]  # Limit to 5 blog posts
+        context['recent_posts'] = Post.objects.filter(status='published')[:5]
         context['testimonials'] = Testimonial.objects.filter(is_featured=True)[:3]  # Limit to 3 testimonials
         context['leadership_team'] = TeamMember.objects.filter(is_leadership=True)[:4]  # Limit to 4 team members
         
@@ -209,11 +213,15 @@ class DashboardView(LoginRequiredMixin, ListView):
     context_object_name = 'services'
     
     def get_queryset(self):
-        return Service.objects.filter(created_by=self.request.user).order_by('-updated_at')
+        return Service.objects.filter(created_by=self.request.user).order_by('-updated_at')[:5]
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['service_requests'] = ServiceRequest.objects.all().order_by('-created_at')
+        context['service_requests'] = ServiceRequest.objects.all().order_by('-created_at')[:5]
+        context['total_services'] = Service.objects.count()
+        context['active_services'] = Service.objects.filter(is_active=True).count()
+        context['total_requests'] = ServiceRequest.objects.count()
+        context['new_requests'] = ServiceRequest.objects.filter(is_processed=False).count()
         return context
 
 class ServiceCreateView(LoginRequiredMixin, CreateView):
@@ -324,3 +332,291 @@ def custom_404_view(request, exception):
         'request_path': request.path,
     }
     return render(request, '404.html', context=context, status=404)
+
+
+# Direct Booking View
+@require_POST
+def book_service_directly(request, service_id):
+    """View for direct service booking without custom quote"""
+    service = get_object_or_404(Service, id=service_id)
+    
+    if request.method == 'POST':
+        # Create service request with direct booking flag
+        service_request = ServiceRequest.objects.create(
+            service=service,
+            name=request.POST.get('name'),
+            email=request.POST.get('email'),
+            phone=request.POST.get('phone'),
+            message=f"DIRECT BOOKING - I want to book this service at the listed price: {service.get_price_display()}. {request.POST.get('message', '')}",
+            contact_method=request.POST.get('contact_method', 'whatsapp'),
+            budget_range='custom',
+            custom_budget=service.starting_price if service.starting_price else None,
+            project_location=request.POST.get('project_location', ''),
+            project_timeline=request.POST.get('project_timeline', '')
+        )
+        
+        # Send booking confirmation (with error handling)
+        try:
+            subject = f"Direct Booking: {service.title}"
+            html_message = render_to_string('emails/direct_booking_admin.html', {
+                'service_request': service_request,
+                'service': service,
+            })
+            plain_message = strip_tags(html_message)
+            
+            send_mail(
+                subject,
+                plain_message,
+                getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@maiyembe.com'),
+                [getattr(settings, 'ADMIN_EMAIL', 'admin@maiyembe.com')],
+                html_message=html_message,
+                fail_silently=True,
+            )
+        except Exception as e:
+            logger.error(f"Failed to send booking email: {str(e)}")
+        
+        messages.success(request, f'Your booking for {service.title} has been received! We will confirm shortly.')
+        return redirect('core:service_request_success')
+
+
+# Add these imports at the top
+from django.views.generic import ListView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
+from .models import ServiceRequest
+
+# Add these new views after existing views
+
+class ServiceListDashboardView(LoginRequiredMixin, ListView):
+    """Dashboard view for managing services"""
+    model = Service
+    template_name = 'dashboard/service_list.html'
+    context_object_name = 'services'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        return Service.objects.all().order_by('-created_at')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_services'] = Service.objects.filter(is_active=True).count()
+        context['featured_services'] = Service.objects.filter(is_featured=True).count()
+        context['service_requests_count'] = ServiceRequest.objects.count()
+        return context
+
+class ServiceRequestListView(LoginRequiredMixin, ListView):
+    """Dashboard view for service requests"""
+    model = ServiceRequest
+    template_name = 'dashboard/service_request_list.html'
+    context_object_name = 'service_requests'
+    paginate_by = 15
+    
+    def get_queryset(self):
+        queryset = ServiceRequest.objects.all().order_by('-created_at')
+        status = self.request.GET.get('status')
+        
+        if status == 'new':
+            queryset = queryset.filter(is_processed=False)
+        elif status == 'processed':
+            queryset = queryset.filter(is_processed=True)
+        
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_requests'] = ServiceRequest.objects.count()
+        context['new_requests'] = ServiceRequest.objects.filter(is_processed=False).count()
+        context['processed_requests'] = ServiceRequest.objects.filter(is_processed=True).count()
+        context['this_month_requests'] = ServiceRequest.objects.filter(
+            created_at__month=timezone.now().month
+        ).count()
+        return context
+
+class ServiceRequestDetailView(LoginRequiredMixin, DetailView):
+    """Detail view for service requests"""
+    model = ServiceRequest
+    template_name = 'dashboard/service_request_detail.html'
+    context_object_name = 'service_request'
+
+class ServiceRequestUpdateView(LoginRequiredMixin, UpdateView):
+    """Update view for service requests"""
+    model = ServiceRequest
+    fields = ['notes']
+    template_name = 'dashboard/service_request_detail.html'
+    
+    def get_success_url(self):
+        messages.success(self.request, 'Notes updated successfully!')
+        return reverse_lazy('core:service_request_detail', kwargs={'pk': self.object.pk})
+
+class ServiceRequestDeleteView(LoginRequiredMixin, DeleteView):
+    """Delete view for service requests"""
+    model = ServiceRequest
+    template_name = 'dashboard/service_request_confirm_delete.html'
+    success_url = reverse_lazy('core:service_request_list')
+    
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, 'Service request deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+
+class ServiceRequestMarkProcessedView(LoginRequiredMixin, UpdateView):
+    """Mark service request as processed"""
+    model = ServiceRequest
+    fields = []
+    
+    def form_valid(self, form):
+        form.instance.is_processed = True
+        messages.success(self.request, 'Service request marked as processed!')
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy('core:service_request_detail', kwargs={'pk': self.object.pk})
+
+class ServiceRequestMarkNewView(LoginRequiredMixin, UpdateView):
+    """Mark service request as new"""
+    model = ServiceRequest
+    fields = []
+    
+    def form_valid(self, form):
+        form.instance.is_processed = False
+        messages.success(self.request, 'Service request marked as new!')
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy('core:service_request_detail', kwargs={'pk': self.object.pk})
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# core/views.py - Add these views
+class TestimonialListView(LoginRequiredMixin, ListView):
+    """Dashboard view for testimonials"""
+    model = Testimonial
+    template_name = 'dashboard/testimonial_list.html'
+    context_object_name = 'testimonials'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        return Testimonial.objects.all().order_by('order', '-created_at')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_testimonials'] = Testimonial.objects.count()
+        context['published_testimonials'] = Testimonial.objects.filter(status='published').count()
+        context['featured_testimonials'] = Testimonial.objects.filter(is_featured=True).count()
+        return context
+
+class TestimonialCreateView(LoginRequiredMixin, CreateView):
+    """Create testimonial"""
+    model = Testimonial
+    form_class = TestimonialForm
+    template_name = 'dashboard/testimonial_form.html'
+    success_url = reverse_lazy('core:testimonial_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Testimonial created successfully!')
+        return super().form_valid(form)
+
+class TestimonialUpdateView(LoginRequiredMixin, UpdateView):
+    """Update testimonial"""
+    model = Testimonial
+    form_class = TestimonialForm
+    template_name = 'dashboard/testimonial_form.html'
+    success_url = reverse_lazy('core:testimonial_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Testimonial updated successfully!')
+        return super().form_valid(form)
+
+class TestimonialDeleteView(LoginRequiredMixin, DeleteView):
+    """Delete testimonial"""
+    model = Testimonial
+    template_name = 'dashboard/testimonial_confirm_delete.html'
+    success_url = reverse_lazy('core:testimonial_list')
+    
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, 'Testimonial deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+
+class TeamMemberListView(LoginRequiredMixin, ListView):
+    """Dashboard view for team members"""
+    model = TeamMember
+    template_name = 'dashboard/team_list.html'
+    context_object_name = 'team_members'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        return TeamMember.objects.all().order_by('order', 'name')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_members'] = TeamMember.objects.count()
+        context['active_members'] = TeamMember.objects.filter(status='active').count()
+        context['leadership_members'] = TeamMember.objects.filter(is_leadership=True).count()
+        return context
+
+class TeamMemberCreateView(LoginRequiredMixin, CreateView):
+    """Create team member"""
+    model = TeamMember
+    form_class = TeamMemberForm
+    template_name = 'dashboard/team_form.html'
+    success_url = reverse_lazy('core:team_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Team member created successfully!')
+        return super().form_valid(form)
+
+class TeamMemberUpdateView(LoginRequiredMixin, UpdateView):
+    """Update team member"""
+    model = TeamMember
+    form_class = TeamMemberForm
+    template_name = 'dashboard/team_form.html'
+    success_url = reverse_lazy('core:team_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Team member updated successfully!')
+        return super().form_valid(form)
+
+class TeamMemberDeleteView(LoginRequiredMixin, DeleteView):
+    """Delete team member"""
+    model = TeamMember
+    template_name = 'dashboard/team_confirm_delete.html'
+    success_url = reverse_lazy('core:team_list')
+    
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, 'Team member deleted successfully!')
+        return super().delete(request, *args, **kwargs)

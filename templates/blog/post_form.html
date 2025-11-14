@@ -1,0 +1,240 @@
+<!-- templates/blog/post_form.html -->
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block dashboard_content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>{% if object %}Edit Post{% else %}Create New Post{% endif %}</h1>
+        <a href="{% url 'blog:blog_dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Blog
+        </a>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="post-form">
+        {% csrf_token %}
+        
+        <div class="form-row">
+            <div class="form-group full-width">
+                <label for="{{ form.title.id_for_label }}">Post Title *</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div class="error">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.category.id_for_label }}">Category</label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                <div class="error">{{ form.category.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.status.id_for_label }}">Status</label>
+                {{ form.status }}
+                {% if form.status.errors %}
+                <div class="error">{{ form.status.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.published_date.id_for_label }}">Publish Date</label>
+                {{ form.published_date }}
+                {% if form.published_date.errors %}
+                <div class="error">{{ form.published_date.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.tags.id_for_label }}">Tags</label>
+                {{ form.tags }}
+                {% if form.tags.errors %}
+                <div class="error">{{ form.tags.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.featured_image.id_for_label }}">Featured Image</label>
+            {{ form.featured_image }}
+            {% if form.featured_image.errors %}
+            <div class="error">{{ form.featured_image.errors }}</div>
+            {% endif %}
+            {% if object and object.featured_image %}
+            <div class="current-image">
+                <p>Current Image:</p>
+                <img src="{{ object.featured_image.url }}" alt="Current featured image" style="max-width: 200px; height: auto; border-radius: 8px;">
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.excerpt.id_for_label }}">Excerpt</label>
+            {{ form.excerpt }}
+            {% if form.excerpt.errors %}
+            <div class="error">{{ form.excerpt.errors }}</div>
+            {% endif %}
+            <div class="help-text">Brief summary of the post (optional)</div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.content.id_for_label }}">Content *</label>
+            {{ form.content }}
+            {% if form.content.errors %}
+            <div class="error">{{ form.content.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.meta_title.id_for_label }}">Meta Title (SEO)</label>
+                {{ form.meta_title }}
+                {% if form.meta_title.errors %}
+                <div class="error">{{ form.meta_title.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.meta_description.id_for_label }}">Meta Description (SEO)</label>
+            {{ form.meta_description }}
+            {% if form.meta_description.errors %}
+            <div class="error">{{ form.meta_description.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-check-group">
+            <div class="form-check">
+                {{ form.is_featured }}
+                <label for="{{ form.is_featured.id_for_label }}">Feature this post</label>
+            </div>
+            
+            <div class="form-check">
+                {{ form.is_pinned }}
+                <label for="{{ form.is_pinned.id_for_label }}">Pin this post to top</label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> {% if object %}Update Post{% else %}Create Post{% endif %}
+            </button>
+            <a href="{% url 'blog:blog_dashboard' %}" class="btn btn-secondary">Cancel</a>
+            
+            {% if object %}
+            <a href="{% url 'blog:post_delete' object.pk %}" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Delete Post
+            </a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<style>
+.post-form {
+    margin-top: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-check-group {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-check input[type="checkbox"] {
+    width: auto;
+}
+
+.help-text {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-top: 5px;
+}
+
+.error {
+    color: var(--danger);
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.current-image {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.current-image p {
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-check-group {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}

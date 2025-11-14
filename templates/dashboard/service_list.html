@@ -1,0 +1,217 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard_content %}
+<div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1>Services Management</h1>
+    <div class="header-actions">
+        <a href="{% url 'core:service_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Service
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="fas fa-concierge-bell"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ services.count }}</h3>
+            <p>Total Services</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ active_services }}</h3>
+            <p>Active Services</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-star"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ featured_services }}</h3>
+            <p>Featured Services</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon info">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ service_requests_count }}</h3>
+            <p>Service Requests</p>
+        </div>
+    </div>
+</div>
+
+<!-- Services List -->
+<div class="services-section">
+    <h2 style="margin-bottom: 20px;">All Services</h2>
+    
+    {% if services %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Features</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for service in services %}
+                <tr>
+                    <td>
+                        <div class="service-info" style="display: flex; align-items: center; gap: 10px;">
+                            {% if service.image %}
+                            <img src="{{ service.image.url }}" alt="{{ service.title }}" class="service-thumb" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">
+                            {% else %}
+                            <div class="service-placeholder" style="width: 50px; height: 50px; border-radius: 8px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #adb5bd;">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <strong>{{ service.title }}</strong>
+                                {% if service.is_featured %}
+                                <span class="badge badge-primary" style="background: var(--primary-color); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; margin-left: 5px;">Featured</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="category-tag" style="background: #e9ecef; color: var(--text-dark); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">
+                            {{ service.get_category_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <strong>{{ service.get_price_display }}</strong>
+                        {% if service.price_unit %}
+                        <br><small style="color: var(--text-light);">{{ service.price_unit }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge {% if service.is_active %}badge-success{% else %}badge-secondary{% endif %}" style="padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">
+                            {% if service.is_active %}Active{% else %}Inactive{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <span style="color: var(--text-light);">{{ service.features.count }} features</span>
+                    </td>
+                    <td>{{ service.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <div class="action-buttons" style="display: flex; gap: 5px;">
+                            <a href="{% url 'core:service_update' service.pk %}" class="btn btn-sm btn-edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'core:service_detail' service.slug %}" class="btn btn-sm btn-secondary" target="_blank">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'core:service_delete' service.pk %}" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px;">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <span class="btn btn-sm btn-primary">{{ num }}</span>
+        {% else %}
+        <a href="?page={{ num }}" class="btn btn-sm btn-secondary">{{ num }}</a>
+        {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-sm btn-secondary">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="no-services" style="text-align: center; padding: 40px; background: white; border-radius: 12px;">
+        <p style="margin-bottom: 20px; color: var(--text-light);">No services found.</p>
+        <a href="{% url 'core:service_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create Your First Service
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.data-table th,
+.data-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.data-table tr:hover {
+    background: #f8f9fa;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.badge-success { background: var(--success); color: white; }
+.badge-secondary { background: #6c757d; color: white; }
+.badge-primary { background: var(--primary-color); color: white; }
+
+@media (max-width: 768px) {
+    .data-table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .header-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+</style>
+{% endblock %}

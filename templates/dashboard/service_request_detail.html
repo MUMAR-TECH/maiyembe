@@ -1,0 +1,289 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard_content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>Service Request Details</h1>
+        <a href="{% url 'core:service_request_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Requests
+        </a>
+    </div>
+
+    <div class="request-details">
+        <!-- Request Information -->
+        <div class="detail-section">
+            <h3>Request Information</h3>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <label>Request ID:</label>
+                    <span>#{{ service_request.id }}</span>
+                </div>
+                <div class="detail-item">
+                    <label>Status:</label>
+                    <span class="badge {% if not service_request.is_processed %}badge-warning{% else %}badge-success{% endif %}">
+                        {% if not service_request.is_processed %}New{% else %}Processed{% endif %}
+                    </span>
+                </div>
+                <div class="detail-item">
+                    <label>Received:</label>
+                    <span>{{ service_request.created_at|date:"M d, Y H:i" }}</span>
+                </div>
+                <div class="detail-item">
+                    <label>Last Updated:</label>
+                    <span>{{ service_request.updated_at|date:"M d, Y H:i" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Client Information -->
+        <div class="detail-section">
+            <h3>Client Information</h3>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <label>Name:</label>
+                    <span>{{ service_request.name }}</span>
+                </div>
+                <div class="detail-item">
+                    <label>Email:</label>
+                    <span><a href="mailto:{{ service_request.email }}">{{ service_request.email }}</a></span>
+                </div>
+                <div class="detail-item">
+                    <label>Phone:</label>
+                    <span><a href="tel:{{ service_request.phone }}">{{ service_request.phone }}</a></span>
+                </div>
+                <div class="detail-item">
+                    <label>Preferred Contact:</label>
+                    <span>{{ service_request.get_contact_method_display }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Details -->
+        <div class="detail-section">
+            <h3>Service Details</h3>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <label>Service Type:</label>
+                    <span>{{ service_request.get_service_type_display }}</span>
+                </div>
+                {% if service_request.service %}
+                <div class="detail-item">
+                    <label>Specific Service:</label>
+                    <span>
+                        <a href="{% url 'core:service_detail' service_request.service.slug %}" target="_blank">
+                            {{ service_request.service.title }}
+                        </a>
+                    </span>
+                </div>
+                {% endif %}
+                <div class="detail-item">
+                    <label>Budget Range:</label>
+                    <span>{{ service_request.get_budget_display }}</span>
+                </div>
+                {% if service_request.custom_budget %}
+                <div class="detail-item">
+                    <label>Custom Budget:</label>
+                    <span>ZMW {{ service_request.custom_budget|floatformat:2 }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Project Information -->
+        <div class="detail-section">
+            <h3>Project Information</h3>
+            <div class="detail-grid">
+                {% if service_request.project_location %}
+                <div class="detail-item">
+                    <label>Project Location:</label>
+                    <span>{{ service_request.project_location }}</span>
+                </div>
+                {% endif %}
+                {% if service_request.project_timeline %}
+                <div class="detail-item">
+                    <label>Timeline:</label>
+                    <span>{{ service_request.project_timeline }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Client Message -->
+        <div class="detail-section">
+            <h3>Client Message</h3>
+            <div class="message-content">
+                <p>{{ service_request.message }}</p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="detail-section">
+            <h3>Actions</h3>
+            <div class="action-buttons" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                {% if not service_request.is_processed %}
+                <form method="post" action="{% url 'core:service_request_mark_processed' service_request.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check"></i> Mark as Processed
+                    </button>
+                </form>
+                {% else %}
+                <form method="post" action="{% url 'core:service_request_mark_new' service_request.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-clock"></i> Mark as New
+                    </button>
+                </form>
+                {% endif %}
+                
+                <a href="mailto:{{ service_request.email }}?subject=Re: Your Service Request #{{ service_request.id }}&body=Dear {{ service_request.name }},%0D%0A%0D%0AThank you for your service request.%0D%0A%0D%0A" 
+                   class="btn btn-primary">
+                    <i class="fas fa-reply"></i> Reply via Email
+                </a>
+                
+                {% if service_request.phone %}
+                <a href="https://wa.me/{{ service_request.phone|cut:' '|cut:'+'|cut:'-' }}?text=Hi {{ service_request.name }}, I'm following up on your service request #{{ service_request.id }}" 
+                   class="btn btn-success" target="_blank">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                {% endif %}
+                
+                <form method="post" action="{% url 'core:service_request_delete' service_request.pk %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this service request?')">
+                        <i class="fas fa-trash"></i> Delete Request
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Notes -->
+        <div class="detail-section">
+            <h3>Quick Notes</h3>
+            <form method="post" action="{% url 'core:service_request_update' service_request.pk %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="notes">Internal Notes:</label>
+                    <textarea name="notes" id="notes" class="form-control" rows="4" placeholder="Add any internal notes about this request...">{{ service_request.notes|default:'' }}</textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Notes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.detail-section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.detail-section h3 {
+    margin-bottom: 20px;
+    color: var(--text-dark);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.detail-item label {
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
+
+.detail-item span {
+    color: var(--text-light);
+}
+
+.message-content {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.message-content p {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--text-dark);
+}
+
+.badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-warning { background: var(--warning); color: var(--text-dark); }
+.badge-success { background: var(--success); color: white; }
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(193, 154, 107, 0.1);
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-warning {
+    background: var(--warning);
+    color: var(--text-dark);
+}
+
+.btn-warning:hover {
+    background: #e0a800;
+}
+
+@media (max-width: 768px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}

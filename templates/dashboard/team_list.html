@@ -1,0 +1,195 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard_content %}
+<div class="dashboard-header">
+    <h1>Team Management</h1>
+    <div class="header-actions">
+        <a href="{% url 'core:team_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Team Member
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ total_members }}</h3>
+            <p>Total Members</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-user-check"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ active_members }}</h3>
+            <p>Active Members</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-crown"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ leadership_members }}</h3>
+            <p>Leadership</p>
+        </div>
+    </div>
+</div>
+
+<!-- Team Members List -->
+<div class="team-section">
+    <h2 style="margin-bottom: 20px;">All Team Members</h2>
+    
+    {% if team_members %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Position</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Leadership</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in team_members %}
+                <tr>
+                    <td>
+                        <div class="member-info" style="display: flex; align-items: center; gap: 10px;">
+                            {% if member.image %}
+                            <img src="{{ member.image.url }}" alt="{{ member.name }}" class="member-thumb" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                            <div class="member-placeholder" style="width: 40px; height: 40px; border-radius: 50%; background: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #adb5bd;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <strong>{{ member.name }}</strong>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ member.position }}</td>
+                    <td>{{ member.email|default:"-" }}</td>
+                    <td>
+                        <span class="badge {% if member.status == 'active' %}badge-success{% else %}badge-secondary{% endif %}">
+                            {{ member.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if member.is_leadership %}
+                        <i class="fas fa-check text-success"></i>
+                        {% else %}
+                        <i class="fas fa-times text-muted"></i>
+                        {% endif %}
+                    </td>
+                    <td>{{ member.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <div class="action-buttons" style="display: flex; gap: 5px;">
+                            <a href="{% url 'core:team_update' member.pk %}" class="btn btn-sm btn-edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'core:team_delete' member.pk %}" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px;">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <span class="btn btn-sm btn-primary">{{ num }}</span>
+        {% else %}
+        <a href="?page={{ num }}" class="btn btn-sm btn-secondary">{{ num }}</a>
+        {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-sm btn-secondary">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="no-members" style="text-align: center; padding: 40px; background: white; border-radius: 12px;">
+        <p style="margin-bottom: 20px; color: var(--text-light);">No team members found.</p>
+        <a href="{% url 'core:team_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Your First Team Member
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.data-table th,
+.data-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.data-table tr:hover {
+    background: #f8f9fa;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.badge-success { background: var(--success); color: white; }
+.badge-secondary { background: #6c757d; color: white; }
+
+@media (max-width: 768px) {
+    .data-table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .header-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+</style>
+{% endblock %}
