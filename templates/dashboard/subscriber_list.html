@@ -1,0 +1,223 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard_content %}
+<div class="dashboard-header">
+    <h1>Newsletter Subscribers</h1>
+</div>
+
+<!-- Statistics Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ total_subscribers }}</h3>
+            <p>Total Subscribers</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ active_subscribers }}</h3>
+            <p>Active Subscribers</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-ban"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ inactive_subscribers }}</h3>
+            <p>Inactive Subscribers</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon danger">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ bounced_subscribers }}</h3>
+            <p>Bounced Emails</p>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Tabs -->
+<div class="filter-tabs" style="margin-bottom: 20px;">
+    <a href="?status=all" class="tab-btn {% if request.GET.status == 'all' or not request.GET.status %}active{% endif %}">
+        All Subscribers
+    </a>
+    <a href="?status=active" class="tab-btn {% if request.GET.status == 'active' %}active{% endif %}">
+        Active ({{ active_subscribers }})
+    </a>
+    <a href="?status=inactive" class="tab-btn {% if request.GET.status == 'inactive' %}active{% endif %}">
+        Inactive
+    </a>
+    <a href="?status=bounced" class="tab-btn {% if request.GET.status == 'bounced' %}active{% endif %}">
+        Bounced
+    </a>
+</div>
+
+<!-- Subscribers List -->
+<div class="subscribers-section">
+    {% if subscribers %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Source</th>
+                    <th>Subscribed</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subscriber in subscribers %}
+                <tr>
+                    <td>
+                        <strong>{{ subscriber.email }}</strong>
+                    </td>
+                    <td>{{ subscriber.name|default:"-" }}</td>
+                    <td>
+                        <span class="badge {% if subscriber.status == 'active' %}badge-success{% elif subscriber.status == 'inactive' %}badge-warning{% else %}badge-danger{% endif %}">
+                            {{ subscriber.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ subscriber.source|title }}</td>
+                    <td>{{ subscriber.subscribed_at|date:"M d, Y" }}</td>
+                    <td>
+                        <div class="action-buttons" style="display: flex; gap: 5px;">
+                            <a href="{% url 'core:subscriber_update' subscriber.pk %}" class="btn btn-sm btn-edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button class="btn btn-sm {% if subscriber.status == 'active' %}btn-warning{% else %}btn-success{% endif %} toggle-status-btn" data-subscriber-id="{{ subscriber.id }}">
+                                <i class="fas fa-power-off"></i>
+                            </button>
+                            <a href="{% url 'core:subscriber_delete' subscriber.pk %}" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px;">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <span class="btn btn-sm btn-primary">{{ num }}</span>
+        {% else %}
+        <a href="?page={{ num }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="btn btn-sm btn-secondary">{{ num }}</a>
+        {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="btn btn-sm btn-secondary">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="no-subscribers" style="text-align: center; padding: 40px; background: white; border-radius: 12px;">
+        <p style="margin-bottom: 20px; color: var(--text-light);">No subscribers found.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.data-table th,
+.data-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.data-table tr:hover {
+    background: #f8f9fa;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.badge-success { background: var(--success); color: white; }
+.badge-warning { background: var(--warning); color: white; }
+.badge-danger { background: var(--danger); color: white; }
+
+.stat-icon.danger {
+    background: rgba(220, 53, 69, 0.1);
+    color: var(--danger);
+}
+
+@media (max-width: 768px) {
+    .data-table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .filter-tabs {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle subscriber status
+    document.querySelectorAll('.toggle-status-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const subscriberId = this.dataset.subscriberId;
+            fetch(`/dashboard/subscribers/toggle-status/${subscriberId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

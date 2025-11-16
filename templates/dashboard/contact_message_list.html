@@ -1,0 +1,310 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard_content %}
+<div class="dashboard-header">
+    <h1>Contact Messages</h1>
+</div>
+
+<!-- Statistics Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="fas fa-envelope"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ total_messages }}</h3>
+            <p>Total Messages</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ new_messages }}</h3>
+            <p>New Messages</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ read_messages }}</h3>
+            <p>Read Messages</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon info">
+            <i class="fas fa-reply"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ replied_messages }}</h3>
+            <p>Replied Messages</p>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Tabs -->
+<div class="filter-tabs" style="margin-bottom: 20px;">
+    <a href="?status=all" class="tab-btn {% if request.GET.status == 'all' or not request.GET.status %}active{% endif %}">
+        All Messages
+    </a>
+    <a href="?status=new" class="tab-btn {% if request.GET.status == 'new' %}active{% endif %}">
+        New ({{ new_messages }})
+    </a>
+    <a href="?status=read" class="tab-btn {% if request.GET.status == 'read' %}active{% endif %}">
+        Read
+    </a>
+    <a href="?status=replied" class="tab-btn {% if request.GET.status == 'replied' %}active{% endif %}">
+        Replied
+    </a>
+</div>
+
+<!-- Messages List -->
+<div class="messages-section">
+    {% if messages %}
+    <div class="messages-list">
+        {% for message in messages %}
+        <div class="message-card {% if message.status == 'new' %}message-new{% endif %}">
+            <div class="message-header">
+                <div class="message-sender">
+                    <strong>{{ message.name }}</strong>
+                    <span class="message-email">{{ message.email }}</span>
+                </div>
+                <div class="message-meta">
+                    <span class="message-date">{{ message.created_at|date:"M d, Y H:i" }}</span>
+                    <span class="badge {% if message.status == 'new' %}badge-warning{% elif message.status == 'read' %}badge-info{% elif message.status == 'replied' %}badge-success{% else %}badge-secondary{% endif %}">
+                        {{ message.get_status_display }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="message-subject">
+                <strong>Subject:</strong> {{ message.subject }}
+            </div>
+            
+            <div class="message-content">
+                <p>{{ message.message|truncatewords:30 }}</p>
+            </div>
+            
+            <div class="message-actions">
+                <a href="{% url 'core:contact_message_detail' message.pk %}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-eye"></i> View Details
+                </a>
+                {% if message.status != 'replied' %}
+                <button class="btn btn-sm btn-success mark-replied-btn" data-message-id="{{ message.id }}">
+                    <i class="fas fa-reply"></i> Mark Replied
+                </button>
+                {% endif %}
+                {% if message.status != 'archived' %}
+                <button class="btn btn-sm btn-secondary mark-archived-btn" data-message-id="{{ message.id }}">
+                    <i class="fas fa-archive"></i> Archive
+                </button>
+                {% endif %}
+                <a href="{% url 'core:contact_message_delete' message.pk %}" class="btn btn-sm btn-danger">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px;">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <span class="btn btn-sm btn-primary">{{ num }}</span>
+        {% else %}
+        <a href="?page={{ num }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="btn btn-sm btn-secondary">{{ num }}</a>
+        {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="btn btn-sm btn-secondary">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="no-messages" style="text-align: center; padding: 40px; background: white; border-radius: 12px;">
+        <p style="margin-bottom: 20px; color: var(--text-light);">No contact messages found.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.filter-tabs {
+    display: flex;
+    gap: 10px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.tab-btn:hover:not(.active) {
+    background: #f8f9fa;
+}
+
+.messages-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.message-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+.message-new {
+    border-left-color: var(--warning);
+    background: #fffbf0;
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.message-sender strong {
+    color: var(--text-dark);
+    display: block;
+}
+
+.message-email {
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+
+.message-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.message-date {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.message-subject {
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.message-content {
+    margin-bottom: 15px;
+    line-height: 1.6;
+    color: var(--text-light);
+}
+
+.message-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.badge-warning { background: var(--warning); color: white; }
+.badge-info { background: var(--info); color: white; }
+.badge-success { background: var(--success); color: white; }
+.badge-secondary { background: #6c757d; color: white; }
+
+@media (max-width: 768px) {
+    .filter-tabs {
+        flex-direction: column;
+    }
+    
+    .message-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .message-meta {
+        align-items: flex-start;
+    }
+    
+    .message-actions {
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mark as replied
+    document.querySelectorAll('.mark-replied-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const messageId = this.dataset.messageId;
+            fetch(`/dashboard/contact-messages/mark-replied/${messageId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        });
+    });
+
+    // Mark as archived
+    document.querySelectorAll('.mark-archived-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const messageId = this.dataset.messageId;
+            fetch(`/dashboard/contact-messages/mark-archived/${messageId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

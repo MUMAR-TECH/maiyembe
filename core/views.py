@@ -3,11 +3,11 @@ from django.contrib import messages
 from django.views.generic import TemplateView, DetailView, CreateView, ListView
 from django.urls import reverse_lazy
 from django.http import JsonResponse
-from .models import ServiceFeature, ServiceRequest, TeamMember, Service, SliderImage, Testimonial, Subscriber,About
+from .models import ContactMessage, ServiceFeature, ServiceRequest, TeamMember, Service, SliderImage, Testimonial, Subscriber,About
 from blog.models import Post
 from projects.models import Project
 
-from .forms import ContactForm, ServiceCreateForm, ServiceFeatureForm, ServiceRequestForm, ServiceUpdateForm, SubscriberForm, TeamMemberForm, TestimonialForm
+from .forms import AboutForm, ContactForm, ContactMessageForm, ServiceCreateForm, ServiceFeatureForm, ServiceRequestForm, ServiceUpdateForm, SliderImageForm, SubscriberForm, TeamMemberForm, TestimonialForm
 
 
 from django.views.decorators.http import require_POST
@@ -620,3 +620,212 @@ class TeamMemberDeleteView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'Team member deleted successfully!')
         return super().delete(request, *args, **kwargs)
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+# core/views.py - Add these views
+class SliderListView(LoginRequiredMixin, ListView):
+    """Dashboard view for slider images"""
+    model = SliderImage
+    template_name = 'dashboard/slider_list.html'
+    context_object_name = 'sliders'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        return SliderImage.objects.all().order_by('order')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_sliders'] = SliderImage.objects.count()
+        context['active_sliders'] = SliderImage.objects.filter(is_active='True').count()
+        return context
+
+class SliderCreateView(LoginRequiredMixin, CreateView):
+    """Create slider image"""
+    model = SliderImage
+    form_class = SliderImageForm
+    template_name = 'dashboard/slider_form.html'
+    success_url = reverse_lazy('core:slider_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Slider image created successfully!')
+        return super().form_valid(form)
+
+class SliderUpdateView(LoginRequiredMixin, UpdateView):
+    """Update slider image"""
+    model = SliderImage
+    form_class = SliderImageForm
+    template_name = 'dashboard/slider_form.html'
+    success_url = reverse_lazy('core:slider_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Slider image updated successfully!')
+        return super().form_valid(form)
+
+class SliderDeleteView(LoginRequiredMixin, DeleteView):
+    """Delete slider image"""
+    model = SliderImage
+    template_name = 'dashboard/slider_confirm_delete.html'
+    success_url = reverse_lazy('core:slider_list')
+    
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, 'Slider image deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+
+class ContactMessageListView(LoginRequiredMixin, ListView):
+    """Dashboard view for contact messages"""
+    model = ContactMessage
+    template_name = 'dashboard/contact_message_list.html'
+    context_object_name = 'messages'
+    paginate_by = 20
+    
+    def get_queryset(self):
+        status = self.request.GET.get('is_read', 'all')
+        queryset = ContactMessage.objects.all().order_by('-created_at')
+        
+        if status != 'all':
+            queryset = queryset.filter(status=status)
+        
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_messages'] = ContactMessage.objects.count()
+        context['new_messages'] = ContactMessage.objects.filter(is_read='False').count()
+        context['read_messages'] = ContactMessage.objects.filter(is_read='True').count()
+        return context
+
+class ContactMessageDetailView(LoginRequiredMixin, DetailView):
+    """Detail view for contact messages"""
+    model = ContactMessage
+    template_name = 'dashboard/contact_message_detail.html'
+    context_object_name = 'message'
+    
+    def get(self, request, *args, **kwargs):
+        # Mark as read when viewed
+        message = self.get_object()
+        if message.status == 'new':
+            message.status = 'read'
+            message.save()
+        return super().get(request, *args, **kwargs)
+
+class ContactMessageUpdateView(LoginRequiredMixin, UpdateView):
+    """Update contact message status"""
+    model = ContactMessage
+    form_class = ContactMessageForm
+    template_name = 'dashboard/contact_message_detail.html'
+    
+    def get_success_url(self):
+        messages.success(self.request, 'Message status updated!')
+        return reverse_lazy('core:contact_message_detail', kwargs={'pk': self.object.pk})
+
+class ContactMessageDeleteView(LoginRequiredMixin, DeleteView):
+    """Delete contact message"""
+    model = ContactMessage
+    template_name = 'dashboard/contact_message_confirm_delete.html'
+    success_url = reverse_lazy('core:contact_message_list')
+    
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, 'Message deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+
+class SubscriberListView(LoginRequiredMixin, ListView):
+    """Dashboard view for subscribers"""
+    model = Subscriber
+    template_name = 'dashboard/subscriber_list.html'
+    context_object_name = 'subscribers'
+    paginate_by = 20
+    
+    def get_queryset(self):
+        status = self.request.GET.get('status', 'all')
+        queryset = Subscriber.objects.all().order_by('-subscribed_at')
+        
+        if status != 'all':
+            queryset = queryset.filter(status=status)
+        
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_subscribers'] = Subscriber.objects.count()
+        context['active_subscribers'] = Subscriber.objects.filter(is_active='True').count()
+        context['inactive_subscribers'] = Subscriber.objects.filter(is_active='False').count()
+        return context
+
+class SubscriberUpdateView(LoginRequiredMixin, UpdateView):
+    """Update subscriber"""
+    model = Subscriber
+    form_class = SubscriberForm
+    template_name = 'dashboard/subscriber_form.html'
+    success_url = reverse_lazy('core:subscriber_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Subscriber updated successfully!')
+        return super().form_valid(form)
+
+class SubscriberDeleteView(LoginRequiredMixin, DeleteView):
+    """Delete subscriber"""
+    model = Subscriber
+    template_name = 'dashboard/subscriber_confirm_delete.html'
+    success_url = reverse_lazy('core:subscriber_list')
+    
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, 'Subscriber deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+
+class AboutUpdateView(LoginRequiredMixin, UpdateView):
+    """Update about section"""
+    model = About
+    form_class = AboutForm
+    template_name = 'dashboard/about_form.html'
+    success_url = reverse_lazy('core:dashboard')
+    
+    def get_object(self):
+        # Get or create the about instance
+        about, created = About.objects.get_or_create(pk=1)
+        return about
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'About section updated successfully!')
+        return super().form_valid(form)
+
+# AJAX actions
+@require_POST
+def mark_message_replied(request, pk):
+    """Mark message as replied via AJAX"""
+    message = get_object_or_404(ContactMessage, pk=pk)
+    message.status = 'replied'
+    message.save()
+    return JsonResponse({'success': True})
+
+@require_POST
+def mark_message_archived(request, pk):
+    """Mark message as archived via AJAX"""
+    message = get_object_or_404(ContactMessage, pk=pk)
+    message.status = 'archived'
+    message.save()
+    return JsonResponse({'success': True})
+
+@require_POST
+def toggle_subscriber_status(request, pk):
+    """Toggle subscriber active status"""
+    subscriber = get_object_or_404(Subscriber, pk=pk)
+    if subscriber.status == 'active':
+        subscriber.status = 'inactive'
+        subscriber.unsubscribed_at = timezone.now()
+    else:
+        subscriber.status = 'active'
+        subscriber.unsubscribed_at = None
+    subscriber.save()
+    return JsonResponse({'success': True, 'status': subscriber.status})

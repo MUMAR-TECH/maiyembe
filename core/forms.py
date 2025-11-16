@@ -1,5 +1,5 @@
 from django import forms
-from .models import ContactMessage, Service, ServiceFeature, Subscriber, ServiceRequest, TeamMember, Testimonial
+from .models import About, ContactMessage, Service, ServiceFeature, SliderImage, Subscriber, ServiceRequest, TeamMember, Testimonial
 
 class ContactForm(forms.ModelForm):
     """Form for contact messages"""
@@ -282,4 +282,68 @@ class TeamMemberForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             if field_name not in ['is_leadership']:
+                field.widget.attrs.update({'class': 'form-control'})
+
+
+
+
+
+
+
+
+
+class SliderImageForm(forms.ModelForm):
+    """Form for slider images"""
+    class Meta:
+        model = SliderImage
+        fields = [
+            'title', 'subtitle', 'image', 
+            'button_text', 'button_url', 'order','is_active'
+        ]
+        widgets = {
+            'button_text': forms.Textarea(attrs={'rows': 3}),
+            'button_url': forms.TextInput(attrs={'placeholder': '/contact or #section'}),
+        }
+    
+    
+
+class ContactMessageForm(forms.ModelForm):
+    """Form for contact messages (admin)"""
+    class Meta:
+        model = ContactMessage
+        fields = ['is_read']
+        widgets = {
+            'is_read': forms.BooleanField(),
+        }
+
+class SubscriberForm(forms.ModelForm):
+    """Form for subscribers (admin)"""
+    class Meta:
+        model = Subscriber
+        fields = ['email','is_active']
+        widgets = {
+            'is_active': forms.BooleanField(),
+        }
+    
+    
+
+class AboutForm(forms.ModelForm):
+    """Form for about section"""
+    class Meta:
+        model = About
+        fields = [
+            'title', 'main_content', 'secondary_content', 'additional_content', 
+            'image', 'is_active'
+        ]
+        widgets = {
+            'main_content': forms.Textarea(attrs={'rows': 4}),
+            'secondary_content': forms.Textarea(attrs={'rows': 3}),
+            'additional_content': forms.Textarea(attrs={'rows': 2}),
+            
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name not in ['is_active']:
                 field.widget.attrs.update({'class': 'form-control'})

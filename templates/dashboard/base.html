@@ -372,6 +372,28 @@
                     </a>
                 </div>
 
+                <div class="nav-section">
+                    <div class="nav-section-title">Website Content</div>
+                    <a href="{% url 'core:slider_list' %}" class="{% if 'sliders' in request.path %}active{% endif %}">
+                        <i class="fas fa-images"></i> Slider Images
+                    </a>
+                    <a href="{% url 'core:about_update' %}" class="{% if 'about' in request.path %}active{% endif %}">
+                        <i class="fas fa-info-circle"></i> About Section
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Communications</div>
+                    <a href="{% url 'core:contact_message_list' %}" class="{% if 'contact-messages' in request.path %}active{% endif %}">
+                        <i class="fas fa-envelope"></i> Contact Messages
+                        {% if new_messages_count > 0 %}
+                        <span class="badge badge-danger" style="margin-left: auto;">{{ new_messages_count }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="{% url 'core:subscriber_list' %}" class="{% if 'subscribers' in request.path %}active{% endif %}">
+                        <i class="fas fa-users"></i> Newsletter Subscribers
+                    </a>
+                </div>
 
                 <div class="nav-section">
                     <div class="nav-section-title">Website</div>
